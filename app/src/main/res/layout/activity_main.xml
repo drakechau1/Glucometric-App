@@ -52,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:onClick="setActivity"
+                android:onClick="changeActivity"
                 android:text="Take sample"
                 android:textSize="28dp" />
         </androidx.cardview.widget.CardView>
@@ -69,7 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:onClick="setActivity"
+                android:onClick="changeActivity"
                 android:text="Measurement"
                 android:textSize="28dp" />
         </androidx.cardview.widget.CardView>
@@ -99,7 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:onClick="setActivity"
+                android:onClick="changeActivity"
                 android:text="Dataset"
                 android:textSize="28dp" />
         </androidx.cardview.widget.CardView>
@@ -116,7 +116,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:onClick="setActivity"
+                android:onClick="changeActivity"
                 android:text="ML Models"
                 android:textSize="28dp" />
         </androidx.cardview.widget.CardView>
@@ -146,7 +146,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:onClick="setActivity"
+                android:onClick="changeActivity"
                 android:text="Info"
                 android:textSize="28dp" />
         </androidx.cardview.widget.CardView>
@@ -163,7 +163,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:onClick="setActivity"
+                android:onClick="changeActivity"
                 android:text="Setting"
                 android:textSize="28dp" />
         </androidx.cardview.widget.CardView>

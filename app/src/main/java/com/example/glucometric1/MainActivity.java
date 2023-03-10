@@ -2,36 +2,41 @@ package com.example.glucometric1;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+    public void openActivity(AppCompatActivity activity) {
+        Intent intent = new Intent(MainActivity.this, activity.getClass());
+        startActivity(intent);
+    }
 
-    public void setActivity(View view) {
-        TextView textView = (TextView) view;
-        String text = textView.getText().toString();
-        Log.i(Thread.currentThread().getStackTrace()[2].getMethodName(), "User choose " + text + " activity");
+    public void changeActivity(View view) {
+        String text = ((TextView) view).getText().toString();
+        Log.i(Thread.currentThread().getStackTrace()[2].getMethodName(), "Open " + text + " activity");
 
         switch (view.getId()) {
             case R.id.textViewTakeSample:
-                Log.i(Thread.currentThread().getStackTrace()[2].getMethodName(), "Change to Take sample activity");
+                openActivity(new TakeSampleActivity());
                 break;
             case R.id.textViewMeasurement:
-                Log.i(Thread.currentThread().getStackTrace()[2].getMethodName(), "Change to Measurement activity");
+                openActivity(new MeasurementActivity());
                 break;
             case R.id.textViewDataset:
-                Log.i(Thread.currentThread().getStackTrace()[2].getMethodName(), "Change to Dataset activity");
+                openActivity(new DatasetActivity());
                 break;
             case R.id.textViewMLModels:
-                Log.i(Thread.currentThread().getStackTrace()[2].getMethodName(), "Change to ML models activity");
+                openActivity(new MLModelsActivity());
                 break;
             case R.id.textViewInfo:
-                Log.i(Thread.currentThread().getStackTrace()[2].getMethodName(), "Change to Info activity");
+                openActivity(new InfoActivity());
                 break;
             case R.id.textViewSetting:
-                Log.i(Thread.currentThread().getStackTrace()[2].getMethodName(), "Change to Setting activity");
+                openActivity(new SettingActivity());
                 break;
             default:
                 Log.i(Thread.currentThread().getStackTrace()[2].getMethodName(), "No activity");
@@ -43,5 +48,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(Thread.currentThread().getStackTrace()[2].getClassName().toString(), "Resumed");
     }
 }

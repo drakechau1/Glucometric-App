@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">GlucoMetric1</string>
+    <string name="app_name">Glucose Metric</string>
+    <string name="bottom_nav_take_sample">Add</string>
+    <string name="bottom_nav_record">Record</string>
+    <string name="bottom_nav_logging">Logging</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
