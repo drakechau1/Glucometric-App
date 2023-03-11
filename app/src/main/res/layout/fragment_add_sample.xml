@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/linearLayoutBottomAction"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="20dp"
         android:ems="10"
         android:hint="Notes"
         android:textSize="20dp"
@@ -64,8 +64,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/editTextNote"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="50dp">
+        android:layout_centerHorizontal="true" >
 
         <TextView
             android:id="@+id/textViewInputValue"
@@ -86,11 +85,11 @@
             android:text="mg/l"
             android:textSize="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/editTextTextPersonName2"
+            app:layout_constraintStart_toEndOf="@id/editTextInputValue"
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName2"
+            android:id="@+id/editTextInputValue"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:width="200dp"
@@ -104,18 +103,23 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <EditText
-        android:id="@+id/editTextTextMultiLine3"
+        android:id="@+id/editTextWavelengthValues"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/linearInputValue"
         android:layout_below="@+id/textViewConnectionStatus"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="50dp"
         android:ems="10"
         android:text="My full name is Chau Minh Duc"
         android:gravity="start|top"
         android:enabled="true"
         android:inputType="textMultiLine" />
+
+
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/barchart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextWavelengthValues"
+        android:layout_above="@id/linearInputValue"/>
 
     <TextView
         android:id="@+id/textViewConnectionStatus"
@@ -124,7 +128,8 @@
         android:gravity="center"
         android:text="Success connection: &quot;device_ble&quot;"
         android:textSize="15dp"
-        android:textStyle="italic" />
+        android:textStyle="italic"
+        tools:ignore="TextSizeCheck" />
 
 
 </RelativeLayout>

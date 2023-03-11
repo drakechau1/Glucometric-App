@@ -1,17 +1,30 @@
 package com.example.glucometric1.takesample;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.example.glucometric1.R;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,6 +45,18 @@ public class AddSampleFragment extends Fragment {
     Button buttonTakeSample;
     Button buttonSave;
     Button buttonRandom;
+    EditText editTextValues;
+    BarChart barChart;
+    BarData barData;
+    BarDataSet barDataSet;
+    ArrayList barEntriesList;
+
+    ArrayList<Double> arrayList = new ArrayList<Double>();
+    ArrayList<String> listWavelengthLabels =
+            new ArrayList<String>(List.of("410", "435","460", "485",
+                    "510", "535", "560", "585",
+                    "610", "645", "680","705", "730", "760","810", "860", "900", "940"));
+
     public AddSampleFragment() {
 
     }
@@ -72,6 +97,9 @@ public class AddSampleFragment extends Fragment {
         buttonSave = (Button) view.findViewById(R.id.btnSave);
         buttonTakeSample = (Button) view.findViewById(R.id.btnTakeSample);
         buttonRandom = (Button) view.findViewById(R.id.btnRandom);
+        editTextValues = (EditText) view.findViewById(R.id.editTextWavelengthValues);
+        barChart = (BarChart) view.findViewById(R.id.barchart);
+
 
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +119,40 @@ public class AddSampleFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Log.i("Debug", "Random");
+
+                arrayList.clear();
+                Log.i("Debug", String.format("ArrayList size: %s", arrayList.size()));
+                for (int i = 0; i < 18; i++) {
+                    double rand = Math.random() * 10000 + 0;
+                    arrayList.add(rand);
+                }
+                Log.i("Debug", String.format("ArrayList size: %s", arrayList.size()));
+
+                barEntriesList = new ArrayList<>();
+                barChart.clear();
+                editTextValues.setText(null);
+                String textStringValues = "";
+                for (int i = 0; i < 18; i++) {
+                    textStringValues += String.format("<b>%s:</b>%.2f - ", listWavelengthLabels.get(i),arrayList.get(i));
+                    barEntriesList.add(new BarEntry(i, arrayList.get(i).floatValue()));
+                }
+                editTextValues.setText(Html.fromHtml(textStringValues, Html.FROM_HTML_MODE_COMPACT));
+
+                barDataSet = new BarDataSet(barEntriesList, "Wavelength");
+                barData = new BarData(barDataSet);
+                barChart.setData(barData);
+                barChart.fitScreen();
+                barChart.setFitBars(true);
+                barChart.animateY(500);
+                barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(listWavelengthLabels));
+                barChart.getXAxis().setLabelCount(barEntriesList.size(), false);
+                barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+                barChart.getXAxis().setLabelRotationAngle(-60);
+                barChart.getDescription().setEnabled(false);
+                barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+                barDataSet.setValueTextColor(Color.BLACK);
+
+
             }
         });
 
