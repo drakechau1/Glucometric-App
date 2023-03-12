@@ -1,5 +1,6 @@
 package com.example.glucometric1.takesample;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -12,18 +13,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.glucometric1.R;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.opencsv.CSVWriter;
+import com.opencsv.CSVWriterBuilder;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -41,7 +49,8 @@ public class AddSampleFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    // TODO: Variables are defined by user
+    private static final String CSV_FILE_PATH = "result.csv";
     Button buttonTakeSample;
     Button buttonSave;
     Button buttonRandom;
@@ -51,11 +60,11 @@ public class AddSampleFragment extends Fragment {
     BarDataSet barDataSet;
     ArrayList barEntriesList;
 
-    ArrayList<Double> arrayList = new ArrayList<Double>();
+    ArrayList<String> arrayList = new ArrayList<String>();
     ArrayList<String> listWavelengthLabels =
-            new ArrayList<String>(List.of("410", "435","460", "485",
+            new ArrayList<String>(List.of("410", "435", "460", "485",
                     "510", "535", "560", "585",
-                    "610", "645", "680","705", "730", "760","810", "860", "900", "940"));
+                    "610", "645", "680", "705", "730", "760", "810", "860", "900", "940"));
 
     public AddSampleFragment() {
 
@@ -77,6 +86,31 @@ public class AddSampleFragment extends Fragment {
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public static boolean addDataToCSV(String outputPath, ArrayList<String> arrayList) {
+        // Source base on: https://www.geeksforgeeks.org/writing-a-csv-file-in-java-using-opencsv/
+
+        // first create file object for file placed at location specified by filepath
+        File file = new File(outputPath);
+        try {
+            // create FileWriter object with file as parameter
+            FileWriter outfile = new FileWriter(file, true);
+            CSVWriter writer = new CSVWriter(outfile);
+
+            String dataArray[] = arrayList.toArray(new String[arrayList.size()]);
+            writer.writeNext(dataArray);
+
+            Log.i("WriteData2CSV", "Wrote: " + Arrays.toString(dataArray));
+
+            // closing writer connection
+            writer.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -105,6 +139,13 @@ public class AddSampleFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Log.i("Debug", "Save data");
+                String path = getActivity().getFilesDir() + "/" + CSV_FILE_PATH;
+                Log.i("FilePath", path);
+                if (addDataToCSV(path, arrayList))
+                    Toast.makeText(getActivity(), "Success: Data wrote to CSV file", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getActivity(), "Failed: Data didn't write to CSV file", Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -124,17 +165,19 @@ public class AddSampleFragment extends Fragment {
                 Log.i("Debug", String.format("ArrayList size: %s", arrayList.size()));
                 for (int i = 0; i < 18; i++) {
                     double rand = Math.random() * 10000 + 0;
-                    arrayList.add(rand);
+                    arrayList.add(String.valueOf(rand));
                 }
                 Log.i("Debug", String.format("ArrayList size: %s", arrayList.size()));
 
+                // Bar Chart processing
                 barEntriesList = new ArrayList<>();
                 barChart.clear();
                 editTextValues.setText(null);
                 String textStringValues = "";
                 for (int i = 0; i < 18; i++) {
-                    textStringValues += String.format("<b>%s:</b>%.2f - ", listWavelengthLabels.get(i),arrayList.get(i));
-                    barEntriesList.add(new BarEntry(i, arrayList.get(i).floatValue()));
+                    float fValue = Float.parseFloat(arrayList.get(i));
+                    textStringValues += String.format("<b>%s:</b>%.2f - ", listWavelengthLabels.get(i), fValue);
+                    barEntriesList.add(new BarEntry(i, fValue));
                 }
                 editTextValues.setText(Html.fromHtml(textStringValues, Html.FROM_HTML_MODE_COMPACT));
 
@@ -151,12 +194,8 @@ public class AddSampleFragment extends Fragment {
                 barChart.getDescription().setEnabled(false);
                 barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
                 barDataSet.setValueTextColor(Color.BLACK);
-
-
             }
         });
-
-
         return view;
     }
 }

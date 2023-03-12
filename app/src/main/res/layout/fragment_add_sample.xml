@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/linearLayoutBottomAction"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:ems="10"
         android:hint="Notes"
         android:textSize="20dp"
@@ -108,7 +108,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/textViewConnectionStatus"
         android:ems="10"
-        android:text="My full name is Chau Minh Duc"
+        android:text="Spectra wavelength values"
         android:gravity="start|top"
         android:enabled="true"
         android:inputType="textMultiLine" />
