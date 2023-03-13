@@ -13,8 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.RetryPolicy;
 import com.example.glucometric1.R;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -24,15 +27,23 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.opencsv.CSVWriter;
-import com.opencsv.CSVWriterBuilder;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,6 +70,7 @@ public class AddSampleFragment extends Fragment {
     BarData barData;
     BarDataSet barDataSet;
     ArrayList barEntriesList;
+    ProgressBar progressBar;
 
     ArrayList<String> arrayList = new ArrayList<String>();
     ArrayList<String> listWavelengthLabels =
@@ -133,7 +145,7 @@ public class AddSampleFragment extends Fragment {
         buttonRandom = (Button) view.findViewById(R.id.btnRandom);
         editTextValues = (EditText) view.findViewById(R.id.editTextWavelengthValues);
         barChart = (BarChart) view.findViewById(R.id.barchart);
-
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBarSavaData);
 
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,9 +153,9 @@ public class AddSampleFragment extends Fragment {
                 Log.i("Debug", "Save data");
                 String path = getActivity().getFilesDir() + "/" + CSV_FILE_PATH;
                 Log.i("FilePath", path);
-                if (addDataToCSV(path, arrayList))
+                if (addDataToCSV(path, arrayList)) {
                     Toast.makeText(getActivity(), "Success: Data wrote to CSV file", Toast.LENGTH_SHORT).show();
-                else
+                } else
                     Toast.makeText(getActivity(), "Failed: Data didn't write to CSV file", Toast.LENGTH_SHORT).show();
 
             }
@@ -152,7 +164,14 @@ public class AddSampleFragment extends Fragment {
         buttonTakeSample.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("Debug", "Take sample");
+                String dataStr = "";
+                for (String x :
+                        arrayList) {
+                    dataStr += x + "|";
+                }
+                Log.i("String", dataStr);
+                postDataUsingVolley(dataStr);
+
             }
         });
 
@@ -176,7 +195,7 @@ public class AddSampleFragment extends Fragment {
                 String textStringValues = "";
                 for (int i = 0; i < 18; i++) {
                     float fValue = Float.parseFloat(arrayList.get(i));
-                    textStringValues += String.format("<b>%s:</b>%.2f - ", listWavelengthLabels.get(i), fValue);
+                    textStringValues += String.format("<b>%s:</b>%.0f   ", listWavelengthLabels.get(i), fValue);
                     barEntriesList.add(new BarEntry(i, fValue));
                 }
                 editTextValues.setText(Html.fromHtml(textStringValues, Html.FROM_HTML_MODE_COMPACT));
@@ -197,5 +216,49 @@ public class AddSampleFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    private void setEnableComponent(boolean b)
+    {
+        buttonTakeSample.setEnabled(b);
+        buttonSave.setEnabled(b);
+        buttonRandom.setEnabled(b);
+        editTextValues.setEnabled(b);
+    }
+
+    private void postDataUsingVolley(String query) {
+// Instantiate the RequestQueue.
+
+        progressBar.setVisibility(View.VISIBLE);
+        setEnableComponent(false);
+
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url = "https://script.google.com/macros/s/AKfycbz-rAqupPrxGvLU77kRXdGvv9THJOGMJ1bn-sjKCgIClMPUBABSLLigcpqs6E_cENw/exec?itemName=" + query;
+
+// Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        progressBar.setVisibility(View.GONE);
+                        setEnableComponent(true);
+
+                        Log.i("onResponse", response);
+                        Toast.makeText(getActivity(), "Data was written to DB", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.setVisibility(View.GONE);
+                setEnableComponent(true);
+
+                Log.i("onResponse", error.toString());
+                Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 }

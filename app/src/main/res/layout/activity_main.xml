@@ -6,16 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-<!--    <androidx.appcompat.widget.Toolbar-->
-<!--        android:id="@+id/toolbar"-->
-<!--        android:layout_width="409dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:background="?attr/colorPrimary"-->
-<!--        android:minHeight="?attr/actionBarSize"-->
-<!--        android:theme="?attr/actionBarTheme"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <ImageView
         android:id="@+id/imageView1"
@@ -28,144 +18,149 @@
         app:srcCompat="@drawable/healthcare_cover" />
 
     <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="409dp"
-        android:layout_height="150dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:background="#C8525871"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView1">
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/imageView1"
+        app:layout_constraintBottom_toBottomOf="parent">
 
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView1"
+        <LinearLayout
+            android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            app:cardBackgroundColor="#C37676">
+            android:background="#C8525871"
+            android:orientation="horizontal"
+            android:layout_gravity="fill">
 
-            <TextView
-                android:id="@+id/textViewTakeSample"
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:onClick="changeActivity"
-                android:text="Take sample"
-                android:textSize="28dp" />
-        </androidx.cardview.widget.CardView>
+                android:layout_weight="1"
+                app:cardBackgroundColor="#C37676">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:cardBackgroundColor="#8789C8">
+                <TextView
+                    android:id="@+id/textViewTakeSample"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:onClick="changeActivity"
+                    android:text="Take sample"
+                    android:textSize="24dp" />
+            </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:id="@+id/textViewMeasurement"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:onClick="changeActivity"
-                android:text="Measurement"
-                android:textSize="28dp" />
-        </androidx.cardview.widget.CardView>
+                android:layout_weight="1"
+                app:cardBackgroundColor="#8789C8">
+
+                <TextView
+                    android:id="@+id/textViewMeasurement"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:onClick="changeActivity"
+                    android:text="Measurement"
+                    android:textSize="24dp" />
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#C8525871"
+            android:orientation="horizontal">
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:cardBackgroundColor="#8789C8">
+
+                <TextView
+                    android:id="@+id/textViewDataset"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:onClick="changeActivity"
+                    android:text="Dataset"
+                    android:textSize="24dp" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:cardBackgroundColor="#C37676">
+
+                <TextView
+                    android:id="@+id/textViewMLModels"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:onClick="changeActivity"
+                    android:text="ML Models"
+                    android:textSize="24dp" />
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#C8525871"
+            android:orientation="horizontal">
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView5"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:cardBackgroundColor="#C37676">
+
+                <TextView
+                    android:id="@+id/textViewInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:onClick="changeActivity"
+                    android:text="Info"
+                    android:textSize="24dp" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:cardBackgroundColor="#8789C8">
+
+                <TextView
+                    android:id="@+id/textViewSetting"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:onClick="changeActivity"
+                    android:text="Setting"
+                    android:textSize="24dp" />
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
     </LinearLayout>
 
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="409dp"
-        android:layout_height="150dp"
-        android:background="#C8525871"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout1">
-
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:cardBackgroundColor="#8789C8">
-
-            <TextView
-                android:id="@+id/textViewDataset"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:onClick="changeActivity"
-                android:text="Dataset"
-                android:textSize="28dp" />
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView4"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:cardBackgroundColor="#C37676">
-
-            <TextView
-                android:id="@+id/textViewMLModels"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:onClick="changeActivity"
-                android:text="ML Models"
-                android:textSize="28dp" />
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_width="409dp"
-        android:layout_height="150dp"
-        android:background="#C8525871"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
-
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView5"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:cardBackgroundColor="#C37676">
-
-            <TextView
-                android:id="@+id/textViewInfo"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:onClick="changeActivity"
-                android:text="Info"
-                android:textSize="28dp" />
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView6"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:cardBackgroundColor="#8789C8">
-
-            <TextView
-                android:id="@+id/textViewSetting"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:onClick="changeActivity"
-                android:text="Setting"
-                android:textSize="28dp" />
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
