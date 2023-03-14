@@ -78,11 +78,11 @@
             android:text="mg/l"
             android:textSize="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/editTextInputValue"
+            app:layout_constraintStart_toEndOf="@id/editTextGlucoseValue"
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editTextInputValue"
+            android:id="@+id/editTextGlucoseValue"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:width="200dp"
