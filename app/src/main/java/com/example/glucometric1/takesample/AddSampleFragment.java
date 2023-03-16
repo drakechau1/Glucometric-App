@@ -3,17 +3,21 @@ package com.example.glucometric1.takesample;
 import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -52,14 +56,18 @@ public class AddSampleFragment extends Fragment {
     private static String CSV_FILE_PATH;
     private static String CSV_FILE_NAME;
     private static String APP_SCRIPT_URL;
-    Button btnTakeSample, btnSave, btnRandom;
-    EditText editTextWavelengthValues, editTextGlucoseValue, editTextNote;
-    BarData barData;
-    BarDataSet barDataSet;
-    BarChart barchart;
-    ProgressBar progressBarSavaData;
-    ArrayList<String> arrayList = new ArrayList<String>();
-    ArrayList<BarEntry> barEntriesList;
+    private static final ArrayList<String> arrayList = new ArrayList<>();
+    private static Button btnTakeSample, btnSave, btnRandom;
+    private static EditText editTextWavelengthValues, editTextGlucoseValue, editTextNote;
+    private static BarData barData;
+    private static BarDataSet barDataSet;
+    private static BarChart barchart;
+    private static ProgressBar progressBarSavaData;
+    private static ArrayList<BarEntry> barEntriesList;
+    private static Vibrator vibrator;
+    private static InputMethodManager imm;
+    private static Spinner spinner;
+
 
     public AddSampleFragment() {
 
@@ -87,18 +95,23 @@ public class AddSampleFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_sample, container, false);
 
+        // Bind component to layout xml by id && service variables
         {
-            // Bind component to layout xml
-            btnSave = (Button) view.findViewById(R.id.btnSave);
-            btnTakeSample = (Button) view.findViewById(R.id.btnTakeSample);
-            btnRandom = (Button) view.findViewById(R.id.btnRandom);
-            editTextWavelengthValues = (EditText) view.findViewById(R.id.editTextWavelengthValues);
-            editTextNote = (EditText) view.findViewById(R.id.editTextNote);
-            editTextGlucoseValue = (EditText) view.findViewById(R.id.editTextGlucoseValue);
-            barchart = (BarChart) view.findViewById(R.id.barchart);
-            progressBarSavaData = (ProgressBar) view.findViewById(R.id.progressBarSavaData);
+            btnSave = view.findViewById(R.id.btnSave);
+            btnTakeSample = view.findViewById(R.id.btnTakeSample);
+            btnRandom = view.findViewById(R.id.btnRandom);
+            editTextWavelengthValues = view.findViewById(R.id.editTextWavelengthValues);
+            editTextNote = view.findViewById(R.id.editTextNote);
+            editTextGlucoseValue = view.findViewById(R.id.editTextGlucoseValue);
+            barchart = view.findViewById(R.id.barchart);
+            progressBarSavaData = view.findViewById(R.id.progressBarSavaData);
+            spinner = view.findViewById(R.id.spinnerSex);
+
+            vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+            imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
         }
 
+        // Config bar chart
         {
             barchart.fitScreen();
             barchart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(listWavelengthLabels));
@@ -106,6 +119,16 @@ public class AddSampleFragment extends Fragment {
             barchart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
             barchart.getXAxis().setLabelRotationAngle(-60);
             barchart.getDescription().setEnabled(false);
+        }
+
+        // Config sex spinner
+        {
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+                    R.array.sex, android.R.layout.simple_spinner_item);
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            // Apply the adapter to the spinner
+            spinner.setAdapter(adapter);
         }
 
         // TODO: Override functions by programmer
@@ -122,7 +145,7 @@ public class AddSampleFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 boolean validGlucoseValue = editTextGlucoseValue.length() > 0;
-//                boolean validNote = editTextNote.length() > 0 ? true : false;
+                //boolean validNote = editTextNote.length() > 0 ? true : false;
                 if (validGlucoseValue) {
                     appendData2CSVFile(CSV_FILE_PATH, arrayList);
                     appendData2Database();
@@ -130,9 +153,9 @@ public class AddSampleFragment extends Fragment {
                     editTextGlucoseValue.setHint(editTextGlucoseValue.getText());
                     editTextGlucoseValue.setText("");
 
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 } else {
+                    vibrator.vibrate(200);
                     Toast.makeText(getActivity(), "Glucose value is empty", Toast.LENGTH_LONG).show();
                 }
             }

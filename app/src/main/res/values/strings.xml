@@ -8,4 +8,11 @@
 
     <string name="app_script_url">"https://script.google.com/macros/s/AKfycbz-rAqupPrxGvLU77kRXdGvv9THJOGMJ1bn-sjKCgIClMPUBABSLLigcpqs6E_cENw/exec?"</string>
     <string name="csv_file_name">wavelengthDataset.csv</string>
+
+    <string-array name="sex">
+        <item>Male</item>
+        <item>Female</item>
+        <item>Other</item>
+    </string-array>
+
 </resources>

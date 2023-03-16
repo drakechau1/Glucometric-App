@@ -12,11 +12,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/linearLayoutBottomAction"
-        android:ems="10"
         android:layout_marginBottom="10dp"
+        android:ems="10"
         android:hint="Notes"
         android:inputType="text"
-        android:textSize="20dp" />
+        android:textSize="16sp" />
 
     <LinearLayout
         android:id="@+id/linearLayoutBottomAction"
@@ -54,9 +54,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearInputValue"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/editTextNote"
+        android:layout_above="@id/linearInputPersonalInfo"
         android:layout_centerHorizontal="true">
 
         <TextView
@@ -65,33 +65,139 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:text="Value"
-            android:textSize="30dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textView10"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:text="mg/l"
-            android:textSize="30dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/editTextGlucoseValue"
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/editTextGlucoseValue"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:width="200dp"
+            android:width="100dp"
             android:ems="10"
             android:gravity="center"
             android:hint="0.00"
             android:inputType="number|text"
-            android:textSize="40dp"
+            android:textSize="24sp"
             app:layout_constraintStart_toEndOf="@id/textViewInputValue" />
+
+        <TextView
+            android:id="@+id/textViewMgl"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="mg/l"
+            android:textColor="@color/black"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/editTextGlucoseValue"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewSex"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:gravity="center_vertical"
+            android:text="Sex"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/textViewMgl"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Spinner
+            android:id="@+id/spinnerSex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/textViewSex"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearInputPersonalInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/editTextNote"
+        android:layout_centerHorizontal="true">
+
+        <!--        Height-->
+        <TextView
+            android:id="@+id/textViewHeight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Height"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/editTextHeight"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="0.00cm"
+            android:inputType="number|text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/textViewHeight"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--        Weight-->
+        <TextView
+            android:id="@+id/textViewWeight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="Weight"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/editTextHeight"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/editTextWeight"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="0.00kg"
+            android:inputType="number|text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/textViewWeight"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--        Age-->
+        <TextView
+            android:id="@+id/textViewAge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="Age"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/editTextWeight"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/editTextAge"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="0"
+            android:inputType="number|text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/textViewAge"
+            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <EditText
@@ -103,7 +209,9 @@
         android:enabled="true"
         android:gravity="start|top"
         android:inputType="textMultiLine"
-        android:text="Spectra wavelength values" />
+        android:hint="Spectra wavelength values"
+        android:textSize="16sp"
+        android:textStyle="italic" />
 
 
     <com.github.mikephil.charting.charts.BarChart
@@ -113,8 +221,7 @@
         android:layout_above="@id/linearInputValue"
         android:layout_below="@id/editTextWavelengthValues"
         android:layout_marginTop="-5dp"
-        android:layout_marginBottom="4dp">
-    </com.github.mikephil.charting.charts.BarChart>
+        android:layout_marginBottom="4dp"></com.github.mikephil.charting.charts.BarChart>
 
 
     <ProgressBar
@@ -124,7 +231,7 @@
         android:layout_height="130dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/textViewConnectionStatus"
