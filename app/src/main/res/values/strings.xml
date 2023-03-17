@@ -10,6 +10,7 @@
     <string name="csv_file_name">wavelengthDataset.csv</string>
 
     <string-array name="sex">
+        <item>---</item>
         <item>Male</item>
         <item>Female</item>
         <item>Other</item>
