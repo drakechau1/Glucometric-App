@@ -16,4 +16,12 @@
         <item>Other</item>
     </string-array>
 
+    <string name="label_device_address">Device address:</string>
+    <string name="label_connection_state">State:</string>
+    <string name="label_ble_disconnected">Disconnected</string>
+    <string name="label_ble_connected">Connected</string>
+    <string name="ble_not_supported">BLE is not supported</string>
+    <string name="error_bluetooth_not_supported">BLE is not supported</string>
+    <string name="unknown_device">Unknown device</string>
+
 </resources>

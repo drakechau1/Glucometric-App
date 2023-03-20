@@ -40,5 +40,7 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation group: 'com.opencsv', name: 'opencsv', version: '5.2'
     implementation 'com.android.volley:volley:1.2.1'
+    implementation 'no.nordicsemi.android:ble:2.6.0'
+    implementation 'no.nordicsemi.android:ble-common:2.6.0'
 
 }

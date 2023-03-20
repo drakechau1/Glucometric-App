@@ -1,13 +1,12 @@
 package com.example.glucometric1;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     public void openActivity(AppCompatActivity activity) {
@@ -32,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
             case R.id.textViewMLModels:
                 openActivity(new MLModelsActivity());
                 break;
-            case R.id.textViewInfo:
-                openActivity(new InfoActivity());
+            case R.id.textViewBLE:
+                openActivity(new BLEActivity());
                 break;
             case R.id.textViewSetting:
                 openActivity(new SettingActivity());
@@ -53,6 +52,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(Thread.currentThread().getStackTrace()[2].getClassName().toString(), "Resumed");
+        Log.i(Thread.currentThread().getStackTrace()[2].getClassName(), "Resumed");
     }
 }
