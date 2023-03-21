@@ -20,7 +20,7 @@
             android:name=".SettingActivity"
             android:exported="false" />
         <activity
-            android:name=".InfoActivity"
+            android:name=".BLEActivity"
             android:exported="false"
             android:launchMode="singleInstance"/>
         <activity

@@ -1,19 +1,29 @@
 <resources>
     <string name="app_name">Glucose Metric</string>
+
+<!--    Bottom navigation label of TakeSample activity-->
     <string name="bottom_nav_take_sample">Add</string>
     <string name="bottom_nav_record">Record</string>
     <string name="bottom_nav_logging">Logging</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
+<!--    Database sources-->
     <string name="app_script_url">"https://script.google.com/macros/s/AKfycbz-rAqupPrxGvLU77kRXdGvv9THJOGMJ1bn-sjKCgIClMPUBABSLLigcpqs6E_cENw/exec?"</string>
     <string name="csv_file_name">wavelengthDataset.csv</string>
 
+<!--    List of sex-->
     <string-array name="sex">
         <item>---</item>
         <item>Male</item>
         <item>Female</item>
         <item>Other</item>
     </string-array>
+
+<!--    Feature labels-->
+    <string name="label_take_sample">TakeSample</string>
+    <string name="label_measurement">Measurement</string>
+    <string name="label_dataset">Dataset</string>
+    <string name="label_ML_models">ML Models</string>
+    <string name="label_BLE">BLE</string>
+    <string name="label_setting">Setting</string>
 
 </resources>
