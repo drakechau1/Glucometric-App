@@ -25,6 +25,7 @@ import no.nordicsemi.android.support.v18.scanner.ScanSettings;
 
 public class BLEScannerService extends Service {
     public final static String ACTION_SCAN_DONE = "com.example.glucometric1.bluetoothle.ACTION_SCAN_DONE";
+    public final static String ACTION_SCAN_NEW_DEVICE = "com.example.glucometric1.bluetoothle.ACTION_SCAN_NEW_DEVICE";
     private static final String TAG = "BLEScannerService";
     // Assigned variables
     private static final boolean SCAN_STATUS_SCANNING = true;
@@ -48,6 +49,7 @@ public class BLEScannerService extends Service {
                 Log.d(TAG, String.format("mac: %s", device.getAddress()));
                 Log.d(TAG, "--------");
                 listBleDevice.add(device);
+                broadcastUpdate(ACTION_SCAN_NEW_DEVICE);
             }
         }
 
@@ -80,6 +82,7 @@ public class BLEScannerService extends Service {
     public static IntentFilter intentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ACTION_SCAN_DONE);
+        intentFilter.addAction(ACTION_SCAN_NEW_DEVICE);
         return intentFilter;
     }
 

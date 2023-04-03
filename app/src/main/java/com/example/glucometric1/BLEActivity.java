@@ -64,11 +64,19 @@ public class BLEActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (BLEScannerService.ACTION_SCAN_DONE.equals(action)) {
-                Log.d(TAG, "BLEScannerService.ACTION_SCAN_DONE");
-                Log.d(TAG, String.format("Total of ble device: %d", bleScannerService.getBleDevices().size()));
-                BLEDevicesAdapter bleDevicesAdapter = new BLEDevicesAdapter(getApplicationContext(), bleScannerService.getBleDevices());
-                lvBleDevices.setAdapter(bleDevicesAdapter);
+            switch (action) {
+                case BLEScannerService.ACTION_SCAN_DONE:
+                    Log.d(TAG, "BLEScannerService.ACTION_SCAN_DONE");
+                    Log.d(TAG, String.format("Total of ble device: %d", bleScannerService.getBleDevices().size()));
+                    Toast.makeText(getApplicationContext(), "Scan successfully", Toast.LENGTH_SHORT).show();
+                    break;
+                case BLEScannerService.ACTION_SCAN_NEW_DEVICE:
+                    BLEDevicesAdapter bleDevicesAdapter = new BLEDevicesAdapter(getApplicationContext(), bleScannerService.getBleDevices());
+                    lvBleDevices.setAdapter(bleDevicesAdapter);
+                    lvBleDevices.deferNotifyDataSetChanged();
+                    break;
+                default:
+                    break;
             }
         }
     };
