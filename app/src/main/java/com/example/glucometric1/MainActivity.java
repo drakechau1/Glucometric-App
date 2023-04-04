@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
+    private final static String TAG = "MainActivity";
+
     public void openActivity(AppCompatActivity activity) {
         Intent intent = new Intent(MainActivity.this, activity.getClass());
         startActivity(intent);
@@ -16,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void changeActivity(View view) {
         String text = ((TextView) view).getText().toString();
-        Log.i(Thread.currentThread().getStackTrace()[2].getMethodName(), "Open " + text + " activity");
+        Log.i(TAG, "Open " + text + " activity");
 
         switch (view.getId()) {
             case R.id.textViewTakeSample:
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
                 openActivity(new SettingActivity());
                 break;
             default:
-                Log.i(Thread.currentThread().getStackTrace()[2].getMethodName(), "No activity");
+                Log.i(TAG, "No activity");
                 break;
         }
     }
@@ -52,6 +54,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(Thread.currentThread().getStackTrace()[2].getClassName(), "Resumed");
+        Log.i(TAG, "Resumed");
     }
 }

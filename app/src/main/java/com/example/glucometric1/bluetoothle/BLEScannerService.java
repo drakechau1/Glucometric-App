@@ -96,6 +96,7 @@ public class BLEScannerService extends Service {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             Log.e(TAG, "Unable to obtain a BluetoothAdapter");
+
             return false;
         }
 

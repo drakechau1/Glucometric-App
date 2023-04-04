@@ -58,7 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Connect"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/textviewBLEStatus"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <include
@@ -69,6 +69,15 @@
         android:layout_marginBottom="5dp"
         app:layout_constraintBottom_toBottomOf="@id/buttonBLEConnect"
         app:layout_constraintEnd_toStartOf="@id/buttonBLEConnect"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textviewBLEStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_ble_disconnected"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

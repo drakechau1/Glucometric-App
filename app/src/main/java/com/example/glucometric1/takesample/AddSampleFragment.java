@@ -3,8 +3,18 @@ package com.example.glucometric1.takesample;
 import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -27,6 +38,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.glucometric1.R;
+import com.example.glucometric1.bluetoothle.BLEGATTService;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -39,8 +51,10 @@ import com.opencsv.CSVWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -49,8 +63,8 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class AddSampleFragment extends Fragment {
-    public static final ArrayList<String> listWavelengthLabels = new ArrayList<>(
-            List.of("410", "435", "460", "485", "510", "535", "560", "585", "610", "645", "680", "705", "730", "760", "810", "860", "900", "940"));
+    private static final String TAG = "AddSampleFragment";
+    public static final ArrayList<String> listWavelengthLabels = new ArrayList<>(List.of("410", "435", "460", "485", "510", "535", "560", "585", "610", "645", "680", "705", "730", "760", "810", "860", "900", "940"));
     // TODO: Variables are defined by user
     private static String CSV_FILE_PATH;
     private static String CSV_FILE_NAME;
@@ -68,11 +82,94 @@ public class AddSampleFragment extends Fragment {
     private static Spinner spinnerSex;
     private NotifyAffect notifyAffect;
 
+    private TextView textViewConnectionStatus;
+
+    private static String ble_device_name;
+    private static String ble_device_address;
+
+    private static BluetoothGattCharacteristic uit_glucose_characteristic;
+
+    BLEGATTService bleGattService;
+
+
     // TODO: Rename and change types and number of parameters
     public static AddSampleFragment newInstance(String param1, String param2) {
         AddSampleFragment fragment = new AddSampleFragment();
         return fragment;
     }
+
+
+    private final ServiceConnection bleGattConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder iBinder) {
+            BLEGATTService.LocalBinder binder = ((BLEGATTService.LocalBinder) iBinder);
+            bleGattService = binder.getService();
+            if (bleGattService != null) {
+                if (!bleGattService.initialize()) {
+                    Log.e(TAG, "Ble GATT server init failed");
+                    return;
+                }
+                Log.d(TAG, "Ble GATT server init successfully");
+                bleGattService.connect(ble_device_address);
+                Handler mhandler = new Handler();
+                mhandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        bleGattService.requestMtu(BLEGATTService.REQUEST_MTU);
+                    }
+                }, 1600);
+
+            } else {
+                Log.e(TAG, "Unable to get bleGattService");
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+    private final BroadcastReceiver bleGattReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            switch (action) {
+                case BLEGATTService.ACTION_GATT_CONNECTED:
+                    textViewConnectionStatus.setText("Success connection: " + ble_device_name);
+                    Log.d(TAG, "BLE connected");
+                    break;
+                case BLEGATTService.ACTION_GATT_DISCONNECTED:
+                    textViewConnectionStatus.setText("Failed connection: " + ble_device_name);
+                    Log.e(TAG, "BLE disconnected");
+                    break;
+                case BLEGATTService.ACTION_GATT_SERVICES_DISCOVERED:
+                    List<BluetoothGattService> gattServices = bleGattService.getSupportedGattServices();
+                    for (BluetoothGattService gattService : gattServices) {
+                        Log.d(TAG, "Service uuid: " + gattService.getUuid());
+                        List<BluetoothGattCharacteristic> characteristics = gattService.getCharacteristics();
+                        for (BluetoothGattCharacteristic characteristic : characteristics) {
+                            String uuid = characteristic.getUuid().toString();
+                            Log.d(TAG, "uuid: " + uuid);
+                            if (BLEGATTService.UIT_GLUCOSE_DATA.equals(uuid)) {
+                                bleGattService.setCharacteristicNotification(characteristic, true);
+                                bleGattService.readCharacteristic(characteristic);
+                                uit_glucose_characteristic = characteristic;
+                            }
+                        }
+                    }
+                    break;
+                case BLEGATTService.ACTION_DATA_AVAILABLE:
+                case BLEGATTService.ACTION_CHARACTERISTIC_CHANGE:
+                    Log.d(TAG, intent.getStringExtra("char_uuid"));
+                    Log.d(TAG, intent.getStringExtra("data_value"));
+                    Toast.makeText(getContext(), intent.getStringExtra("data_value"), Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "value " + intent.getStringExtra("data_value"));
+                default:
+                    break;
+            }
+        }
+    };
 
     private void initComponent(View view) {
         // Bind component to layout xml by id && service variables
@@ -90,6 +187,8 @@ public class AddSampleFragment extends Fragment {
             progressBarSavaData = view.findViewById(R.id.progressBarSavaData);
             spinnerSex = view.findViewById(R.id.spinnerSex);
 
+            textViewConnectionStatus = view.findViewById(R.id.textViewConnectionStatus);
+
             imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
         }
 
@@ -105,8 +204,7 @@ public class AddSampleFragment extends Fragment {
 
         // Config sex spinner
         {
-            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
-                    R.array.sex, android.R.layout.simple_spinner_item);
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.sex, android.R.layout.simple_spinner_item);
             // Specify the layout to use when the list of choices appears
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             // Apply the adapter to the spinner
@@ -125,8 +223,14 @@ public class AddSampleFragment extends Fragment {
 
         notifyAffect = new NotifyAffect(getActivity());
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ble_device_name = getArguments().getString("ble_device_name");
+        ble_device_address = getArguments().getString("ble_device_address");
+        Log.d(TAG, "Device name: " + ble_device_name);
+        Log.d(TAG, "Device address: " + ble_device_address);
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_sample, container, false);
 
@@ -137,7 +241,22 @@ public class AddSampleFragment extends Fragment {
         btnTakeSample.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                bleGattService.readCharacteristic(uit_glucose_characteristic);
 
+//                bleGattService.readCharacteristic(uit_glucose_characteristic);
+
+//                String cmd = "0x01C0";
+//                byte[] cmd = {0xc0};
+                uit_glucose_characteristic.setValue(new byte[]{(byte) 0xc0});
+                bleGattService.writeCharacteristic(uit_glucose_characteristic);
+
+                Handler mhandler = new Handler();
+                mhandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        bleGattService.readCharacteristic(uit_glucose_characteristic);
+                    }
+                }, 4000);
             }
         });
         // Save spectra wavelengths to local (CSV) and cloud (GoogleSheet)
@@ -171,6 +290,25 @@ public class AddSampleFragment extends Fragment {
         simulateDataRandom();
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent gattServiceIntent = new Intent(getActivity(), BLEGATTService.class);
+        getActivity().bindService(gattServiceIntent, bleGattConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(bleGattReceiver);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(bleGattReceiver, BLEGATTService.intentFilter());
     }
 
     private void simulateDataRandom() {
@@ -270,6 +408,7 @@ public class AddSampleFragment extends Fragment {
         Log.i("dataAsString", dataAsString);
         volleyHTTPRequest(Request.Method.GET, "itemName=" + dataAsString);
     }
+
     public boolean appendData2CSVFile(String outputPath, ArrayList<String> arrayList) {
         // Source base on: https://www.geeksforgeeks.org/writing-a-csv-file-in-java-using-opencsv/
         File file = new File(outputPath);
