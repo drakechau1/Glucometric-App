@@ -1,9 +1,7 @@
 package com.example.glucometric1.takesample;
 
-import static android.content.ContentValues.TAG;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
@@ -51,10 +49,8 @@ import com.opencsv.CSVWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 
 /**
@@ -69,7 +65,7 @@ public class AddSampleFragment extends Fragment {
     private static String CSV_FILE_PATH;
     private static String CSV_FILE_NAME;
     private static String APP_SCRIPT_URL;
-    private static final ArrayList<String> arrayList = new ArrayList<>();
+    private static ArrayList<String> arrayList = new ArrayList<>();
     private static Button btnTakeSample, btnSave, btnRandom;
     private static EditText editTextWavelengthValues, editTextGlucoseValue, editTextNote;
     private static EditText editTextHeight, editTextWeight, editTextAge;
@@ -87,7 +83,7 @@ public class AddSampleFragment extends Fragment {
     private static String ble_device_name;
     private static String ble_device_address;
 
-    private static BluetoothGattCharacteristic uit_glucose_characteristic;
+    private static BluetoothGattCharacteristic uit_glucose_characteristic_data, uit_glucose_characteristic_cmd;
 
     BLEGATTService bleGattService;
 
@@ -154,17 +150,28 @@ public class AddSampleFragment extends Fragment {
                             if (BLEGATTService.UIT_GLUCOSE_DATA.equals(uuid)) {
                                 bleGattService.setCharacteristicNotification(characteristic, true);
                                 bleGattService.readCharacteristic(characteristic);
-                                uit_glucose_characteristic = characteristic;
+                                uit_glucose_characteristic_data = characteristic;
+                            } else if (BLEGATTService.UIT_GLUCOSE_CMD.equals(uuid)) {
+                                uit_glucose_characteristic_cmd = characteristic;
                             }
                         }
                     }
                     break;
                 case BLEGATTService.ACTION_DATA_AVAILABLE:
-                case BLEGATTService.ACTION_CHARACTERISTIC_CHANGE:
-                    Log.d(TAG, intent.getStringExtra("char_uuid"));
-                    Log.d(TAG, intent.getStringExtra("data_value"));
-                    Toast.makeText(getContext(), intent.getStringExtra("data_value"), Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "value " + intent.getStringExtra("data_value"));
+//                case BLEGATTService.ACTION_CHARACTERISTIC_CHANGE:
+                    String uuid = intent.getStringExtra("char_uuid");
+                    String data_value = intent.getStringExtra("data_value");
+                    Log.d(TAG, "uuid: " + uuid);
+                    Log.d(TAG, "value: " + data_value);
+//                    Toast.makeText(getContext(), , Toast.LENGTH_SHORT).show();
+//                    Log.d(TAG, "value " + intent.getStringExtra("data_value"));
+                    String[] temp_array = data_value.split(",", 18);
+                    Log.d(TAG, String.format("Length: %d", temp_array.length));
+                    if (temp_array.length == 18) {
+                        // Now convert string into ArrayList
+                        arrayList = new ArrayList<String>(Arrays.asList(temp_array));
+                        updateBarChart(temp_array);
+                    }
                 default:
                     break;
             }
@@ -241,22 +248,23 @@ public class AddSampleFragment extends Fragment {
         btnTakeSample.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                bleGattService.readCharacteristic(uit_glucose_characteristic);
-
-//                bleGattService.readCharacteristic(uit_glucose_characteristic);
-
 //                String cmd = "0x01C0";
 //                byte[] cmd = {0xc0};
-                uit_glucose_characteristic.setValue(new byte[]{(byte) 0xc0});
-                bleGattService.writeCharacteristic(uit_glucose_characteristic);
+                Log.d(TAG, "Taking data");
+                if (uit_glucose_characteristic_cmd != null)
+                {
+                    uit_glucose_characteristic_cmd.setValue(new byte[]{(byte) 0xc0});
+                    bleGattService.writeCharacteristic(uit_glucose_characteristic_cmd);
+                }
 
                 Handler mhandler = new Handler();
                 mhandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        bleGattService.readCharacteristic(uit_glucose_characteristic);
+                        Log.d(TAG, "Read characteristic");
+                        bleGattService.readCharacteristic(uit_glucose_characteristic_data);
                     }
-                }, 4000);
+                }, 7000);
             }
         });
         // Save spectra wavelengths to local (CSV) and cloud (GoogleSheet)
@@ -311,6 +319,7 @@ public class AddSampleFragment extends Fragment {
         getActivity().registerReceiver(bleGattReceiver, BLEGATTService.intentFilter());
     }
 
+    @SuppressLint("DefaultLocale")
     private void simulateDataRandom() {
         // Reset barchart
         resetBarChart();
@@ -323,6 +332,26 @@ public class AddSampleFragment extends Fragment {
             arrayList.add(String.valueOf(rand));
             textStringValues += String.format("<b>%s:</b>%.0f   ", listWavelengthLabels.get(i), rand);
             barEntriesList.add(new BarEntry(i, (float) rand));
+        }
+
+        editTextWavelengthValues.setText(Html.fromHtml(textStringValues, Html.FROM_HTML_MODE_COMPACT));
+
+        handleBarChar(barEntriesList, "Wavelength");
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void updateBarChart(String[] arrayData) {
+        // Reset barchart
+        resetBarChart();
+        editTextWavelengthValues.setText(null);
+        String textStringValues = "";
+        int i = 0;
+        for (String s : arrayData) {
+            Log.d(TAG, s);
+            double rand = Double.parseDouble(s);
+            textStringValues += String.format("<b>%s:</b>%s   ", listWavelengthLabels.get(i), s);
+            barEntriesList.add(new BarEntry(i, (float) rand));
+            i++;
         }
 
         editTextWavelengthValues.setText(Html.fromHtml(textStringValues, Html.FROM_HTML_MODE_COMPACT));

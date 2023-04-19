@@ -53,7 +53,8 @@ public class BLEGATTService extends Service {
     public static final String TAG = "BLEGATTService";
 
 
-    public static final String UIT_GLUCOSE_DATA = "3c02556c-4700-4957-812e-b7d297a55600";   // real device characteristic
+    public static final String UIT_GLUCOSE_CMD = "3c02556c-4700-4957-812e-b7d297a55600";   // write command to device
+    public static final String UIT_GLUCOSE_DATA = "3309a511-784f-2d6c-da11-7722d4c08945";   // real device characteristic
 
     public static final String TEST_DEVICE_ADDRESS = "B8:8E:82:35:91:D5";   // Huawei band 6
     public final static String ACTION_GATT_CONNECTED = "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
@@ -166,6 +167,7 @@ public class BLEGATTService extends Service {
     public void requestMtu(int mtu) {
         if (bluetoothGatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
+
             return;
         }
         Log.d(TAG, "MTU requesting...");
