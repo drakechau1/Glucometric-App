@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="durationContent" type="id" />
+    <item name="itemlistView_ble" type="id" />
 </resources>

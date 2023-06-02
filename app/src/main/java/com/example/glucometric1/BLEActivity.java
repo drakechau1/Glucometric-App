@@ -7,12 +7,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,6 +25,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieDrawable;
+import com.amrdeveloper.lottiedialog.LottieDialog;
 import com.example.glucometric1.bluetoothle.BLEDevicesAdapter;
 import com.example.glucometric1.bluetoothle.BLEGATTService;
 import com.example.glucometric1.bluetoothle.BLEScannerService;
@@ -30,22 +38,23 @@ public class BLEActivity extends AppCompatActivity {
     //
     //
     // Widget variables
-    Button btnScan, btnStop, btnConnect;
-    TextView tvStatus;
+    Button btnStop, btnConnect;
+    ImageButton btnScan;
+    //TextView tvStatus;
     LinearLayout selected_item;
     ListView lvBleDevices;
+    ImageView imageView_device;
 
+    LottieDialog lottieDialog;
     //
     //
     // Assigned variables
     int isConnected = BLEGATTService.STATE_DISCONNECTED;
-
     //
     //
     // Unassigned variables
     BLEScannerService bleScannerService;
     BLEGATTService bleGattService;
-
     //
     //
     // Binding connections
@@ -104,6 +113,8 @@ public class BLEActivity extends AppCompatActivity {
                     Log.d(TAG, "BLEScannerService.ACTION_SCAN_DONE");
                     Log.d(TAG, String.format("Total of ble device: %d", bleScannerService.getBleDevices().size()));
                     Toast.makeText(getApplicationContext(), "Scan successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),String.format("%d devices founded",bleScannerService.getBleDevices().size()),Toast.LENGTH_SHORT).show();
+                    lottieDialog.dismiss();
                     break;
                 case BLEScannerService.ACTION_SCAN_NEW_DEVICE:
                     BLEDevicesAdapter bleDevicesAdapter = new BLEDevicesAdapter(getApplicationContext(), bleScannerService.getBleDevices());
@@ -121,11 +132,11 @@ public class BLEActivity extends AppCompatActivity {
             final String action = intent.getAction();
             switch (action) {
                 case BLEGATTService.ACTION_GATT_CONNECTED:
-                    tvStatus.setText(getResources().getString(R.string.label_ble_connected));
+                    //tvStatus.setText(getResources().getString(R.string.label_ble_connected));
                     isConnected = BLEGATTService.STATE_CONNECTED;
                     break;
                 case BLEGATTService.ACTION_GATT_DISCONNECTED:
-                    tvStatus.setText(getResources().getString(R.string.label_ble_disconnected));
+                    //tvStatus.setText(getResources().getString(R.string.label_ble_disconnected));
                     isConnected = BLEGATTService.STATE_DISCONNECTED;
                     break;
                 default:
@@ -144,12 +155,29 @@ public class BLEActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate");
 
         btnScan = findViewById(R.id.buttonBLEScan);
-        btnStop = findViewById(R.id.buttonBLEStop);
+        //btnStop = findViewById(R.id.buttonBLEStop);
         btnConnect = findViewById(R.id.buttonBLEConnect);
-        tvStatus = findViewById(R.id.textviewBLEStatus);
+        //tvStatus = findViewById(R.id.textviewBLEStatus);
         lvBleDevices = findViewById(R.id.listview_ble_devices);
         selected_item = findViewById(R.id.selected_device_info);
+        imageView_device = findViewById(R.id.imageView_device);
 
+        lottieDialog = new LottieDialog(this)
+                .setAnimation(R.raw.bluetooth_searching)
+                .setAnimationViewHeight(2000)
+                .setAnimationViewHeight(2000)
+                .setAnimationRepeatCount(LottieDrawable.INFINITE)
+                .setAutoPlayAnimation(true)
+                .setMessage("Scanning for devices...")
+                .setMessageTextSize(18)
+                .setDialogBackground(Color.WHITE)
+                .setDialogHeight(1000)
+                .setDialogWidth(1000)
+                .setCancelable(false);
+
+        //Set visible
+        btnConnect.setVisibility(View.GONE);
+        selected_item.setVisibility(View.GONE);
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -171,18 +199,20 @@ public class BLEActivity extends AppCompatActivity {
             if (bleScannerService != null) {
                 Log.i("btnScan", "Scanning BLE devices");
                 bleScannerService.startScan();
+                lottieDialog.show();
             } else {
                 Log.i("btnScan", "bleScannerService is null");
             }
         });
-        btnStop.setOnClickListener(view -> {
-            if (bleScannerService != null) {
-                Log.i("btnStop", "Stop BLE scanner");
-                bleScannerService.stopScan();
-            } else {
-                Log.i("btnStop", "bleScannerService is null");
-            }
-        });
+//        btnStop.setOnClickListener(view -> {
+//            if (bleScannerService != null) {
+//                Log.i("btnStop", "Stop BLE scanner");
+//                bleScannerService.stopScan();
+//            } else {
+//                Log.i("btnStop", "bleScannerService is null");
+//            }
+//        });
+
         btnConnect.setOnClickListener(view -> {
             if (isConnected == BLEGATTService.STATE_DISCONNECTED) {
                 String name = ((TextView) selected_item.findViewById(R.id.ble_device_name)).getText().toString();
@@ -193,13 +223,15 @@ public class BLEActivity extends AppCompatActivity {
                 intent.putExtra("ble_device_address", address);
                 startActivity(intent);
 
-                btnConnect.setText("Disconnect");
+                //btnConnect.setText("Disconnect");
                 //            finish();
-            } else if (isConnected == BLEGATTService.STATE_CONNECTED) {
-//                bleGattService.close();
-                btnConnect.setText("Connect");
-            }
+//            } else if (isConnected == BLEGATTService.STATE_CONNECTED) {
+////                bleGattService.close();
+//                btnConnect.setText("Connect");
+           }
         });
+
+
         lvBleDevices.setOnItemClickListener((adapterView, view, i, l) -> {
             TextView device_name = selected_item.findViewById(R.id.ble_device_name);
             TextView device_address = selected_item.findViewById(R.id.ble_device_address);
@@ -207,6 +239,21 @@ public class BLEActivity extends AppCompatActivity {
             String address = ((TextView) view.findViewById(R.id.ble_device_address)).getText().toString();
             device_name.setText(name);
             device_address.setText(address);
+            String glucose_device = "UIT-GLUCOSE-202334684"; //Example ID of device to get long ID
+            //Set Visibility
+            btnConnect.setVisibility(View.VISIBLE);
+            selected_item.setVisibility(View.VISIBLE);
+
+            if (name.compareTo(glucose_device) == 0)
+            {
+                Drawable myDrawable = getResources().getDrawable(R.drawable.healthcare_cover);
+                imageView_device.setImageDrawable(myDrawable);
+            }
+            else
+            {
+                Drawable myDrawable = getResources().getDrawable(R.drawable.icon_bluetooth2png);
+                imageView_device.setImageDrawable(myDrawable);
+            }
         });
     }
 

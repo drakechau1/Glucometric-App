@@ -25,5 +25,12 @@
     <string name="unknown_device">Unknown device</string>
     <string name="title_activity_slash_screen">SlashScreen</string>
     <string name="title_activity_splash_screen">SplashScreen</string>
+    <string name="do_you_want_to_disconnect_this_device">Do you want to disconnect this device</string>
+    <string name="random">RANDOM</string>
+    <string name="save">SAVE</string>
+    <string name="take_sample">TAKE SAMPLE</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="are_you_sure_want_to_disconnect_bluetooth">Are you sure ?</string>
 
 </resources>

@@ -1,70 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
+    android:orientation="vertical"
+    android:tag="Fragment_add_sample"
     tools:context=".takesample.AddSampleFragment">
 
-    <EditText
-        android:id="@+id/editTextNote"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/linearLayoutBottomAction"
-        android:layout_marginBottom="10dp"
-        android:ems="10"
-        android:hint="Notes"
-        android:inputType="text"
-        android:textSize="16sp" />
+    <ProgressBar
+        android:id="@+id/progressBarSavaData"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:visibility="gone"
+        tools:ignore="MissingConstraints" />
+
 
     <LinearLayout
-        android:id="@+id/linearLayoutBottomAction"
+        android:id="@+id/layout_label"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+        android:layout_height="482dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/linearInputValue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.473"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="MissingConstraints">
 
-        <Button
-            android:id="@+id/btnTakeSample"
+        <TextView
+            android:id="@+id/textViewConnectionStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="start"
+            android:text="Success connection: &quot;device_ble&quot;"
+            android:textSize="16sp"
+            android:textStyle="italic"
+            tools:ignore="TextSizeCheck" />
+
+        <EditText
+            android:id="@+id/editTextWavelengthValues"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:enabled="true"
+            android:gravity="start|top"
+            android:hint="Spectra wavelength values"
+            android:inputType="textMultiLine"
+            android:textSize="16sp"
+            android:textStyle="italic" />
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barchart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:text="TAKE SAMPLE" />
+            android:layout_marginTop="-5dp"
+            android:layout_marginBottom="4dp">
 
-        <Button
-            android:id="@+id/btnSave"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:text="SAVE" />
-
-        <Button
-            android:id="@+id/btnRandom"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:text="RANDOM"
-            android:visibility="visible" />
-
+        </com.github.mikephil.charting.charts.BarChart>
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearInputValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/linearInputPersonalInfo"
-        android:layout_centerHorizontal="true">
+        android:layout_below="@+id/layout_label"
+        app:layout_constraintBottom_toTopOf="@+id/linearInputPersonalInfo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.526"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_label"
+        app:layout_constraintVertical_bias="0.050000012">
 
         <TextView
             android:id="@+id/textViewInputValue"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:text="Value(*)"
+            android:text="Value(*):"
             android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -101,7 +121,7 @@
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
             android:gravity="center_vertical"
-            android:text="Sex"
+            android:text="Sex:"
             android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -112,27 +132,35 @@
             android:id="@+id/spinnerSex"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/custom_shadow_shape_listview"
             android:gravity="center_vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/textViewSex"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearInputPersonalInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/editTextNote"
-        android:layout_centerHorizontal="true">
+        android:layout_below="@+id/linearInputValue"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toTopOf="@id/linearEditNote"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearInputValue"
+        app:layout_constraintVertical_bias="0.084">
 
         <!--        Height-->
         <TextView
             android:id="@+id/textViewHeight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Height"
+            android:text="Height:"
             android:textColor="@color/black"
+            android:textSize="15sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -155,8 +183,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="7dp"
-            android:text="Weight"
+            android:text="Weight:"
             android:textColor="@color/black"
+            android:textSize="15sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/editTextHeight"
@@ -179,8 +208,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="7dp"
-            android:text="Age"
+            android:text="Age:"
             android:textColor="@color/black"
+            android:textSize="15sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/editTextWeight"
@@ -199,48 +229,101 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <EditText
-        android:id="@+id/editTextWavelengthValues"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearEditNote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textViewConnectionStatus"
-        android:ems="10"
-        android:enabled="true"
-        android:gravity="start|top"
-        android:inputType="textMultiLine"
-        android:hint="Spectra wavelength values"
-        android:textSize="16sp"
-        android:textStyle="italic" />
+        android:layout_below="@+id/linearInputPersonalInfo"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayoutBottomAction"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearInputPersonalInfo"
+        app:layout_constraintVertical_bias="0.13">
 
+        <EditText
+            android:id="@+id/editTextNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Notes:"
+            android:inputType="text"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:autofillHints="" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/barchart"
+    <LinearLayout
+        android:id="@+id/linearLayoutBottomAction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/linearInputValue"
-        android:layout_below="@id/editTextWavelengthValues"
-        android:layout_marginTop="-5dp"
-        android:layout_marginBottom="4dp"></com.github.mikephil.charting.charts.BarChart>
+        android:layout_below="@+id/linearEditNote"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/textViewDisconnectDevice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearEditNote">
 
+        <Button
+            android:id="@+id/btnTakeSample"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:textSize="16sp"
+            android:text="@string/take_sample" />
 
-    <ProgressBar
-        android:id="@+id/progressBarSavaData"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:visibility="gone" />
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:text="@string/save" />
 
-    <TextView
-        android:id="@+id/textViewConnectionStatus"
+        <Button
+            android:id="@+id/btnRandom"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:text="@string/random"
+            android:textSize="16sp"
+            android:visibility="visible" />
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/textViewDisconnectDevice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="start"
-        android:text="Success connection: &quot;device_ble&quot;"
-        android:textSize="15dp"
-        android:textStyle="italic"
-        tools:ignore="TextSizeCheck" />
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayoutBottomAction"
+        >
 
+        <TextView
+            android:id="@+id/buttonDisconnectDevice"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="@string/do_you_want_to_disconnect_this_device"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"
+            android:background="@drawable/custom_button_categories_7"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="18sp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,11 +3,17 @@ package com.example.glucometric1.bluetoothle;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import androidx.core.content.ContextCompat;
 
 import com.example.glucometric1.R;
 
@@ -18,6 +24,10 @@ public class BLEDevicesAdapter extends BaseAdapter {
     Context mContext;
     ArrayList<BluetoothDevice> mDevices;
     LayoutInflater mInflater;
+
+    ImageView imageView_device;
+    Animation rightAmin;
+
 
     public BLEDevicesAdapter(Context context, ArrayList<BluetoothDevice> devices) {
         mContext = context;
@@ -46,10 +56,26 @@ public class BLEDevicesAdapter extends BaseAdapter {
         view = mInflater.inflate(R.layout.ble_device_layout, null);
         TextView deviceName = view.findViewById(R.id.ble_device_name);
         TextView MACAddress = view.findViewById(R.id.ble_device_address);
+        imageView_device = view.findViewById(R.id.imageView_device);
+        LinearLayout itemView_layout_ble = view.findViewById(R.id.itemlistView_ble);
+        rightAmin = AnimationUtils.loadAnimation(mContext, R.anim.left_animation);
         BluetoothDevice device = mDevices.get(i);
         if (device.getName() != null) {
+            itemView_layout_ble.setAnimation(rightAmin);
             deviceName.setText(device.getName());
             MACAddress.setText(device.getAddress());
+            String name = deviceName.getText().toString();
+            String glucose_device = "UIT-GLUCOSE-202334684"; //Example ID of device
+            if (name.compareTo(glucose_device) == 0)
+            {
+                Drawable myDrawable = ContextCompat.getDrawable(mContext, R.drawable.healthcare_cover);
+                imageView_device.setImageDrawable(myDrawable);
+            }
+            else
+            {
+                Drawable myDrawable2 = ContextCompat.getDrawable(mContext, R.drawable.icon_bluetooth2png);
+                imageView_device.setImageDrawable(myDrawable2);
+            }
         }
         return view;
     }

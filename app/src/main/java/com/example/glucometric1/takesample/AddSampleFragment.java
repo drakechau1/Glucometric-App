@@ -2,6 +2,9 @@ package com.example.glucometric1.takesample;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.FragmentTransaction;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
@@ -10,14 +13,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.Html;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -29,13 +35,18 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieDrawable;
+import com.amrdeveloper.lottiedialog.LottieDialog;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.glucometric1.MainActivity;
 import com.example.glucometric1.R;
+import com.example.glucometric1.Splash;
 import com.example.glucometric1.bluetoothle.BLEGATTService;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -87,6 +98,9 @@ public class AddSampleFragment extends Fragment {
 
     BLEGATTService bleGattService;
 
+    private  static TextView buttonDisconnectDevice;
+    private static boolean isDeviceConnected;
+    private BluetoothDevice bluetoothDevice;
 
     // TODO: Rename and change types and number of parameters
     public static AddSampleFragment newInstance(String param1, String param2) {
@@ -122,22 +136,25 @@ public class AddSampleFragment extends Fragment {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-
         }
     };
 
     private final BroadcastReceiver bleGattReceiver = new BroadcastReceiver() {
+        @SuppressLint("SetTextI18n")
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             switch (action) {
                 case BLEGATTService.ACTION_GATT_CONNECTED:
                     textViewConnectionStatus.setText("Success connection: " + ble_device_name);
+                    buttonDisconnectDevice.setVisibility(View.VISIBLE);
+                    isDeviceConnected = true;
                     Log.d(TAG, "BLE connected");
                     break;
                 case BLEGATTService.ACTION_GATT_DISCONNECTED:
-                    textViewConnectionStatus.setText("Failed connection: " + ble_device_name);
+                    textViewConnectionStatus.setText("Disconnected: " + ble_device_name);
                     Log.e(TAG, "BLE disconnected");
+                    isDeviceConnected = false;
                     break;
                 case BLEGATTService.ACTION_GATT_SERVICES_DISCOVERED:
                     List<BluetoothGattService> gattServices = bleGattService.getSupportedGattServices();
@@ -178,6 +195,7 @@ public class AddSampleFragment extends Fragment {
         }
     };
 
+    @SuppressLint("SetTextI18n")
     private void initComponent(View view) {
         // Bind component to layout xml by id && service variables
         {
@@ -195,8 +213,14 @@ public class AddSampleFragment extends Fragment {
             spinnerSex = view.findViewById(R.id.spinnerSex);
 
             textViewConnectionStatus = view.findViewById(R.id.textViewConnectionStatus);
+            textViewConnectionStatus.setText("No Device Connected");
+
+            buttonDisconnectDevice = view.findViewById(R.id.buttonDisconnectDevice);
 
             imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+
+            isDeviceConnected = false;
+
         }
 
         // Config bar chart
@@ -256,7 +280,10 @@ public class AddSampleFragment extends Fragment {
                     uit_glucose_characteristic_cmd.setValue(new byte[]{(byte) 0xc0});
                     bleGattService.writeCharacteristic(uit_glucose_characteristic_cmd);
                 }
-
+                if (!isDeviceConnected)
+                {
+                    notifyAffect.makeFailed("No Device GlucoMetric Connected");
+                }
                 Handler mhandler = new Handler();
                 mhandler.postDelayed(new Runnable() {
                     @Override
@@ -274,6 +301,10 @@ public class AddSampleFragment extends Fragment {
                 Log.i("btnSave", "Save");
                 boolean validGlucoseValue = editTextGlucoseValue.length() > 0;
                 //boolean validNote = editTextNote.length() > 0 ? true : false;
+                if (!isDeviceConnected)
+                {
+                    notifyAffect.makeFailed("No Device GlucoMetric Connected");
+                }
                 if (validGlucoseValue) {
                     ArrayList<String> data4Saving = processData4Saving();
                     appendData2CSVFile(CSV_FILE_PATH, data4Saving);
@@ -294,10 +325,61 @@ public class AddSampleFragment extends Fragment {
             }
         });
 
+        // Handle button disconnected device
+        buttonDisconnectDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    openDialogDisconnectDevice();
+            }
+        });
         // View start visualize affectively
         simulateDataRandom();
 
         return view;
+    }
+
+    private void openDialogDisconnectDevice()
+    {
+        final Dialog dialogDisconnectDevice = new Dialog(getActivity());
+        dialogDisconnectDevice.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogDisconnectDevice.setContentView(R.layout.custom_layout_dialog_disconnect_bluetooth);
+        Window window = dialogDisconnectDevice.getWindow();
+        if (window == null)
+        {
+            Toast.makeText(getActivity(), "No window",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        dialogDisconnectDevice.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogDisconnectDevice.setCancelable(false);
+
+        Button btnYes = dialogDisconnectDevice.findViewById(R.id.buttonYes);
+        Button btnNo  = dialogDisconnectDevice.findViewById(R.id.buttonNo);
+
+        btnNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "Keep connected bluetooth",Toast.LENGTH_SHORT).show();
+                dialogDisconnectDevice.dismiss();
+            }
+        });
+        btnYes.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(),"Disconnected bluetooth device:"+ ble_device_name,Toast.LENGTH_SHORT).show();
+                bleGattService.close();
+                textViewConnectionStatus.setText("No Device Connected");
+                buttonDisconnectDevice.setVisibility(View.GONE);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(getActivity(), getActivity().getClass());
+                        startActivity(intent);
+                    }
+                },2000);
+            }
+        });
+        dialogDisconnectDevice.show();
     }
 
     @Override
@@ -403,7 +485,7 @@ public class AddSampleFragment extends Fragment {
             public void onResponse(String response) {
                 Log.i("onResponse", response);
 
-                notifyAffect.makeSuccess("Data was written to DB");
+                notifyAffect.makeSuccess("Data was written to Database");
                 progressBarSavaData.setVisibility(View.GONE);
                 setEnableComponent(true);
             }

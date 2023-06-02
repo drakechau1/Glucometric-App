@@ -6,32 +6,47 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@id/itemlistView_ble"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="5dp"
+        android:background="@drawable/custom_shadow_shape_listview"
         android:orientation="horizontal">
+
         <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/icon_settings_bluetooth" />
+            android:id="@+id/imageView_device"
+            android:layout_width="71dp"
+            android:layout_height="74dp"
+            android:padding="5dp"
+            android:src="@drawable/icon_bluetooth2png" />
 
-        <TextView
-            android:id="@+id/ble_device_name"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/amethysta"
-            android:text="Device name"
-            android:textColor="#450202"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/ble_device_address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="MAC address:"
-            android:textSize="14sp"
-            android:textStyle="normal|italic" />
+            <TextView
+                android:id="@+id/ble_device_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/arvo"
+                android:padding="5dp"
+                android:text="Device name"
+                android:textColor="#450202"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/ble_device_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="MAC address:"
+                android:textColor="#684444"
+                android:textSize="17sp"
+                android:textStyle="normal|italic" />
+        </LinearLayout>
     </LinearLayout>
 
 
