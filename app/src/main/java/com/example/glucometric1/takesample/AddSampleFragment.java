@@ -1,5 +1,7 @@
 package com.example.glucometric1.takesample;
 
+import static com.example.glucometric1.bluetoothle.BLEGATTService.STATE_DEVICE_ERROR;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -44,6 +46,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.glucometric1.BLEActivity;
 import com.example.glucometric1.MainActivity;
 import com.example.glucometric1.R;
 import com.example.glucometric1.Splash;
@@ -83,7 +86,7 @@ public class AddSampleFragment extends Fragment {
     private static BarData barData;
     private static BarDataSet barDataSet;
     private static BarChart barchart;
-    private static ProgressBar progressBarSavaData;
+    //private static ProgressBar progressBarSavaData;
     private static ArrayList<BarEntry> barEntriesList;
     private static InputMethodManager imm;
     private static Spinner spinnerSex;
@@ -100,7 +103,8 @@ public class AddSampleFragment extends Fragment {
 
     private  static TextView buttonDisconnectDevice;
     private static boolean isDeviceConnected;
-    private BluetoothDevice bluetoothDevice;
+
+    private LottieDialog lottieDialog;
 
     // TODO: Rename and change types and number of parameters
     public static AddSampleFragment newInstance(String param1, String param2) {
@@ -209,13 +213,23 @@ public class AddSampleFragment extends Fragment {
             editTextWeight = view.findViewById(R.id.editTextWeight);
             editTextAge = view.findViewById(R.id.editTextAge);
             barchart = view.findViewById(R.id.barchart);
-            progressBarSavaData = view.findViewById(R.id.progressBarSavaData);
+            //progressBarSavaData = view.findViewById(R.id.progressBarSavaData);
             spinnerSex = view.findViewById(R.id.spinnerSex);
-
             textViewConnectionStatus = view.findViewById(R.id.textViewConnectionStatus);
             textViewConnectionStatus.setText("No Device Connected");
-
             buttonDisconnectDevice = view.findViewById(R.id.buttonDisconnectDevice);
+            lottieDialog = new LottieDialog(getActivity())
+                    .setAnimation(R.raw.medical_shield)
+                    .setAnimationViewHeight(2000)
+                    .setAnimationViewHeight(2000)
+                    .setAnimationRepeatCount(LottieDrawable.INFINITE)
+                    .setAutoPlayAnimation(true)
+                    .setMessage("Updating to Database...")
+                    .setMessageTextSize(18)
+                    .setDialogBackground(Color.WHITE)
+                    .setDialogHeight(1000)
+                    .setDialogWidth(1000)
+                    .setCancelable(false);
 
             imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
 
@@ -264,34 +278,49 @@ public class AddSampleFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_sample, container, false);
-
         initComponent(view);
 
         // TODO: Override functions by programmer
         // TakeSample signal to GlucoseDevice to get Wavelength values over BLE connection
         btnTakeSample.setOnClickListener(new View.OnClickListener() {
+            int check = 1;
             @Override
             public void onClick(View view) {
 //                String cmd = "0x01C0";
 //                byte[] cmd = {0xc0};
                 Log.d(TAG, "Taking data");
-                if (uit_glucose_characteristic_cmd != null)
-                {
-                    uit_glucose_characteristic_cmd.setValue(new byte[]{(byte) 0xc0});
-                    bleGattService.writeCharacteristic(uit_glucose_characteristic_cmd);
-                }
                 if (!isDeviceConnected)
                 {
                     notifyAffect.makeFailed("No Device GlucoMetric Connected");
                 }
-                Handler mhandler = new Handler();
-                mhandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d(TAG, "Read characteristic");
-                        bleGattService.readCharacteristic(uit_glucose_characteristic_data);
+                else
+                {
+                    if (uit_glucose_characteristic_cmd != null) {
+                        uit_glucose_characteristic_cmd.setValue(new byte[]{(byte) 0xc0});
+                        check = bleGattService.writeCharacteristic(uit_glucose_characteristic_cmd);
+                        if (check == 0)
+                        {
+                            notifyAffect.makeFailed("No device connect");
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                                    startActivity(intent);
+                                    Toast.makeText(getActivity(), "Device: "+ ble_device_name +" turn off bluetooth", Toast.LENGTH_LONG).show();
+                                }
+                            },2000);
+                        }
                     }
-                }, 7000);
+                    Handler mhandler = new Handler();
+                    mhandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG, "Read characteristic");
+                            bleGattService.readCharacteristic(uit_glucose_characteristic_data);
+                        }
+                    }, 7000);
+                }
+
             }
         });
         // Save spectra wavelengths to local (CSV) and cloud (GoogleSheet)
@@ -373,8 +402,9 @@ public class AddSampleFragment extends Fragment {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Intent intent = new Intent(getActivity(), getActivity().getClass());
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
                         startActivity(intent);
+                        Toast.makeText(getActivity(), "Successfully disconnect bluetooth", Toast.LENGTH_LONG).show();
                     }
                 },2000);
             }
@@ -475,7 +505,8 @@ public class AddSampleFragment extends Fragment {
     }
 
     private void volleyHTTPRequest(int requestMethod, String query) {
-        progressBarSavaData.setVisibility(View.VISIBLE);
+        lottieDialog.show();
+        //progressBarSavaData.setVisibility(View.VISIBLE);
         setEnableComponent(false);
 
         String url = APP_SCRIPT_URL + query;
@@ -485,8 +516,9 @@ public class AddSampleFragment extends Fragment {
             public void onResponse(String response) {
                 Log.i("onResponse", response);
 
-                notifyAffect.makeSuccess("Data was written to Database");
-                progressBarSavaData.setVisibility(View.GONE);
+                notifyAffect.makeSuccess("Update data to Database successfully");
+                lottieDialog.dismiss();
+                //progressBarSavaData.setVisibility(View.GONE);
                 setEnableComponent(true);
             }
         }, new Response.ErrorListener() {
@@ -495,7 +527,9 @@ public class AddSampleFragment extends Fragment {
                 Log.i("onResponse", error.toString());
 
                 notifyAffect.makeFailed(error.toString());
-                progressBarSavaData.setVisibility(View.GONE);
+                lottieDialog.dismiss();
+                //progressBarSavaData.setVisibility(View.GONE);
+                notifyAffect.makeSuccess("Update data to Database fail");
                 setEnableComponent(true);
             }
         });

@@ -133,12 +133,17 @@ public class BLEActivity extends AppCompatActivity {
             switch (action) {
                 case BLEGATTService.ACTION_GATT_CONNECTED:
                     //tvStatus.setText(getResources().getString(R.string.label_ble_connected));
+                    Log.e(TAG, "GATT connected");
                     isConnected = BLEGATTService.STATE_CONNECTED;
                     break;
                 case BLEGATTService.ACTION_GATT_DISCONNECTED:
                     //tvStatus.setText(getResources().getString(R.string.label_ble_disconnected));
+                    Log.e(TAG, "GATT disconnected");
                     isConnected = BLEGATTService.STATE_DISCONNECTED;
                     break;
+                case BLEGATTService.ACTION_DEVICE_ERROR:
+                    isConnected = BLEGATTService.STATE_DEVICE_ERROR;
+                    Log.e(TAG, "Device turn off");
                 default:
                     break;
             }
@@ -198,6 +203,7 @@ public class BLEActivity extends AppCompatActivity {
         btnScan.setOnClickListener(view -> {
             if (bleScannerService != null) {
                 Log.i("btnScan", "Scanning BLE devices");
+                lvBleDevices.setVisibility(View.VISIBLE);
                 bleScannerService.startScan();
                 lottieDialog.show();
             } else {
@@ -222,7 +228,10 @@ public class BLEActivity extends AppCompatActivity {
                 intent.putExtra("ble_device_name", name);
                 intent.putExtra("ble_device_address", address);
                 startActivity(intent);
-
+                //Set visible
+                btnConnect.setVisibility(View.GONE);
+                selected_item.setVisibility(View.GONE);
+                lvBleDevices.setVisibility(View.GONE);
                 //btnConnect.setText("Disconnect");
                 //            finish();
 //            } else if (isConnected == BLEGATTService.STATE_CONNECTED) {

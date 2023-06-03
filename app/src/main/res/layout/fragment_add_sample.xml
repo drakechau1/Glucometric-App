@@ -9,13 +9,17 @@
     android:tag="Fragment_add_sample"
     tools:context=".takesample.AddSampleFragment">
 
-    <ProgressBar
-        android:id="@+id/progressBarSavaData"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:visibility="gone"
-        tools:ignore="MissingConstraints" />
+<!--    <ProgressBar-->
+<!--        android:id="@+id/progressBarSavaData"-->
+<!--        style="?android:attr/progressBarStyle"-->
+<!--        android:layout_width="130dp"-->
+<!--        android:layout_height="130dp"-->
+<!--        android:visibility="gone"-->
+<!--        android:background="@color/white"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="@+id/layout_label"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
 
     <LinearLayout

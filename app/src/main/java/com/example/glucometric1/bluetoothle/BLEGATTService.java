@@ -56,14 +56,16 @@ public class BLEGATTService extends Service {
     public static final String UIT_GLUCOSE_CMD = "3c02556c-4700-4957-812e-b7d297a55600";   // write command to device
     public static final String UIT_GLUCOSE_DATA = "3309a511-784f-2d6c-da11-7722d4c08945";   // real device characteristic
 
-    public static final String TEST_DEVICE_ADDRESS = "B8:8E:82:35:91:D5";   // Huawei band 6
+    //public static final String TEST_DEVICE_ADDRESS = "B8:8E:82:35:91:D5";   // Huawei band 6
     public final static String ACTION_GATT_CONNECTED = "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
     public final static String ACTION_GATT_DISCONNECTED = "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
     public final static String ACTION_GATT_SERVICES_DISCOVERED = "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
     public final static String ACTION_DATA_AVAILABLE = "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
     public final static String ACTION_CHARACTERISTIC_CHANGE = "com.example.bluetooth.le.ACTION_CHARACTERISTIC_CHANGE";
+    public final static String ACTION_DEVICE_ERROR = "com.example.bluetooth.le.ACTION_DEVICE_ERROR";
     public final static int STATE_CONNECTED = 1;
     public final static int STATE_DISCONNECTED = 0;
+    public final static int STATE_DEVICE_ERROR = 2;
     public final static int REQUEST_MTU = 515;
 
 
@@ -79,7 +81,7 @@ public class BLEGATTService extends Service {
     private BluetoothDevice bleDevice;
     private BluetoothGatt bluetoothGatt;
     private Handler handler;
-    private int connectionState;
+    public int connectionState = 0;
 
     public static IntentFilter intentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
@@ -88,6 +90,7 @@ public class BLEGATTService extends Service {
         intentFilter.addAction(ACTION_GATT_SERVICES_DISCOVERED);
         intentFilter.addAction(ACTION_DATA_AVAILABLE);
         intentFilter.addAction(ACTION_CHARACTERISTIC_CHANGE);
+        intentFilter.addAction(ACTION_DEVICE_ERROR);
         return intentFilter;
     }
 
@@ -179,21 +182,23 @@ public class BLEGATTService extends Service {
     }
 
     @SuppressLint("MissingPermission")
-    public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
+    public int readCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (bluetoothGatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
-            return;
+            return 0;
         }
         bluetoothGatt.readCharacteristic(characteristic);
+        return 1;
     }
 
     @SuppressLint("MissingPermission")
-    public void writeCharacteristic(BluetoothGattCharacteristic characteristic) {
+    public int writeCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (bluetoothGatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
-            return;
+            return 0;
         }
         bluetoothGatt.writeCharacteristic(characteristic);
+        return 1;
     }
 
 
@@ -244,9 +249,18 @@ public class BLEGATTService extends Service {
                     Log.w(TAG, "Closed GATT, BLE device disconnected");
                     broadcastUpdate(ACTION_GATT_DISCONNECTED);
                 }
-            } else {
+            }
+            else if (status == BluetoothGatt.GATT_INSUFFICIENT_AUTHORIZATION)
+            {
+                connectionState = STATE_DEVICE_ERROR;
+                bluetoothGatt.close();
+                bluetoothGatt = null;
+                Log.e(TAG, "Closed GATT, BLE device has been disconnected");
+                broadcastUpdate(ACTION_DEVICE_ERROR);
+            }
+            else
+            {
                 Log.e(TAG, "Gatt status error: " + status);
-                close();
             }
 
         }
