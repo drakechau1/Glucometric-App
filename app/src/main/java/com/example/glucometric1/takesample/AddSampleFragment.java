@@ -478,7 +478,16 @@ public class AddSampleFragment extends Fragment {
 
     private void handleBarChar(ArrayList entriesList, String label) {
         barDataSet = new BarDataSet(entriesList, label);
-        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        int[] colors = new int[] {Color.rgb(58,40,113), Color.rgb(125,38,205)
+                                    ,Color.rgb(40,55,105), Color.rgb(24,71,133)
+                                    ,Color.rgb(32,90,167), Color.rgb(0,127,84)
+                                    ,Color.rgb(54,117,23), Color.rgb(91,189,43)
+                                    ,Color.rgb(220, 216,0), Color.rgb(249,244,0)
+                                    ,Color.rgb(241,175,0), Color.rgb(240,156,66)
+                                    ,Color.rgb(236,135,14) , Color.rgb(235,113,83)
+                                    ,Color.rgb(223,53,57),Color.rgb(223,0,41)
+                                    ,Color.rgb(182,41,43), Color.rgb(139,0,22)};
+        barDataSet.setColors(colors);
         barDataSet.setValueTextColor(Color.BLACK);
         barData = new BarData(barDataSet);
         barchart.animateY(500);
