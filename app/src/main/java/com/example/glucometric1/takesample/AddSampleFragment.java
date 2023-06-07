@@ -82,7 +82,7 @@ public class AddSampleFragment extends Fragment {
     private static ArrayList<String> arrayList = new ArrayList<>();
     private static Button btnTakeSample, btnSave, btnRandom;
     private static EditText editTextWavelengthValues, editTextGlucoseValue, editTextNote;
-    private static EditText editTextHeight, editTextWeight, editTextAge;
+    private static EditText editTextHeight, editTextWeight, editTextAge, editTextTemp;
     private static BarData barData;
     private static BarDataSet barDataSet;
     private static BarChart barchart;
@@ -212,6 +212,7 @@ public class AddSampleFragment extends Fragment {
             editTextHeight = view.findViewById(R.id.editTextHeight);
             editTextWeight = view.findViewById(R.id.editTextWeight);
             editTextAge = view.findViewById(R.id.editTextAge);
+            editTextTemp  = view.findViewById(R.id.editTextTemp);
             barchart = view.findViewById(R.id.barchart);
             //progressBarSavaData = view.findViewById(R.id.progressBarSavaData);
             spinnerSex = view.findViewById(R.id.spinnerSex);
@@ -509,6 +510,7 @@ public class AddSampleFragment extends Fragment {
         dataList.add(editTextHeight.getText().toString());
         dataList.add(editTextWeight.getText().toString());
         dataList.add(spinnerSex.getSelectedItem().toString());
+        dataList.add(editTextTemp.getText().toString());
         Log.i("processData4Saving", Arrays.toString(arrayList.toArray()));
         return dataList;
     }
@@ -539,6 +541,7 @@ public class AddSampleFragment extends Fragment {
                 lottieDialog.dismiss();
                 //progressBarSavaData.setVisibility(View.GONE);
                 notifyAffect.makeSuccess("Update data to Database fail");
+                notifyAffect.makeFailed("No internet Connection");
                 setEnableComponent(true);
             }
         });

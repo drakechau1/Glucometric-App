@@ -36,7 +36,7 @@ public class TakeSampleActivity extends AppCompatActivity {
         mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView);
 
         Bundle bundle = new Bundle();
-        String myMessage = "Stack Overflow is cool!";
+
         bundle.putString("ble_device_name", ble_device_name);
         bundle.putString("ble_device_address", ble_device_address);
 

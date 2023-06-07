@@ -99,12 +99,12 @@
             android:id="@+id/editTextGlucoseValue"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:width="100dp"
-            android:ems="10"
+            android:width="70dp"
+            android:ems="1"
             android:gravity="center"
             android:hint="0.00"
             android:inputType="number|text"
-            android:textSize="24sp"
+            android:textSize="20sp"
             app:layout_constraintStart_toEndOf="@id/textViewInputValue" />
 
         <TextView
@@ -134,14 +134,45 @@
 
         <Spinner
             android:id="@+id/spinnerSex"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_marginEnd="5dp"
             android:background="@drawable/custom_shadow_shape_listview"
             android:gravity="center_vertical"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/textViewTemp"
             app:layout_constraintStart_toEndOf="@id/textViewSex"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <!--- Temperature-->
+        <TextView
+            android:id="@+id/textViewTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="55dp"
+            android:text="Temp:"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.515" />
+        <EditText
+            android:id="@+id/editTextTemp"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="0°C"
+            android:inputType="number|text"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.515"/>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -230,6 +261,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/textViewAge"
             app:layout_constraintTop_toTopOf="parent" />
+        
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
