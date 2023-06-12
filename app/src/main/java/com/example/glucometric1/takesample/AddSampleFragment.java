@@ -506,11 +506,11 @@ public class AddSampleFragment extends Fragment {
         // Format: wavelengths[18],age,height,weight,sex,note
         // Total field: 24
         ArrayList<String> dataList = new ArrayList<>(arrayList);
+        dataList.add(editTextTemp.getText().toString());
         dataList.add(editTextAge.getText().toString());
         dataList.add(editTextHeight.getText().toString());
         dataList.add(editTextWeight.getText().toString());
         dataList.add(spinnerSex.getSelectedItem().toString());
-        dataList.add(editTextTemp.getText().toString());
         Log.i("processData4Saving", Arrays.toString(arrayList.toArray()));
         return dataList;
     }
