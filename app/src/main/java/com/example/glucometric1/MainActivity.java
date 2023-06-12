@@ -12,6 +12,8 @@ import android.view.animation.AnimationUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+public static final float APP_MOBILE_VERSION = 1.0;
+
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
     Animation topAmin , bottomAmin, leftAmin;
