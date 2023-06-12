@@ -1,3 +1,37 @@
 <resources>
-    <string name="app_name">GlucoMetric1</string>
+    <string name="app_name">Glucose Metric</string>
+    <string name="bottom_nav_take_sample">Add</string>
+    <string name="bottom_nav_record">Record</string>
+    <string name="bottom_nav_logging">Logging</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="app_script_url">"https://script.google.com/macros/s/AKfycbz-rAqupPrxGvLU77kRXdGvv9THJOGMJ1bn-sjKCgIClMPUBABSLLigcpqs6E_cENw/exec?"</string>
+    <string name="csv_file_name">wavelengthDataset.csv</string>
+
+    <string-array name="sex">
+        <item>---</item>
+        <item>Male</item>
+        <item>Female</item>
+        <item>Other</item>
+    </string-array>
+
+    <string name="label_device_address">Device address:</string>
+    <string name="label_connection_state">State:</string>
+    <string name="label_ble_disconnected">Disconnected</string>
+    <string name="label_ble_connected">Connected</string>
+    <string name="ble_not_supported">BLE is not supported</string>
+    <string name="error_bluetooth_not_supported">BLE is not supported</string>
+    <string name="unknown_device">Unknown device</string>
+    <string name="title_activity_slash_screen">SlashScreen</string>
+    <string name="title_activity_splash_screen">SplashScreen</string>
+    <string name="do_you_want_to_disconnect_this_device">Do you want to disconnect this device</string>
+    <string name="random">RANDOM</string>
+    <string name="save">SAVE</string>
+    <string name="take_sample">TAKE SAMPLE</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="are_you_sure_want_to_disconnect_bluetooth">Are you sure ?</string>
+    <string name="the_system_monitors_blood_glucose_levels_continuously_you_can_also_control_blood_glucose_levels_to_adjust_your_diet_accordingly">The system monitors blood glucose levels continuously. You can also control blood glucose levels to adjust your diet accordingly.</string>
+
 </resources>
