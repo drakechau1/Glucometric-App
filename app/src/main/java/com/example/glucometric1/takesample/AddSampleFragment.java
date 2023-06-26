@@ -4,8 +4,10 @@ import static com.example.glucometric1.bluetoothle.BLEGATTService.STATE_DEVICE_E
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.FragmentTransaction;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -285,6 +287,7 @@ public class AddSampleFragment extends Fragment {
         // TakeSample signal to GlucoseDevice to get Wavelength values over BLE connection
         btnTakeSample.setOnClickListener(new View.OnClickListener() {
             int check = 1;
+            int restApp = 0;
             @Override
             public void onClick(View view) {
 //                String cmd = "0x01C0";
@@ -292,24 +295,46 @@ public class AddSampleFragment extends Fragment {
                 Log.d(TAG, "Taking data");
                 if (!isDeviceConnected)
                 {
-                    notifyAffect.makeFailed("No Device GlucoMetric Connected");
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifyAffect.makeFailed("No Device GlucoMetric Connected");
+                        }
+                    },2000);
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 1000,intent,
+                            PendingIntent.FLAG_CANCEL_CURRENT);
+                    AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.set(AlarmManager.RTC,System.currentTimeMillis() + 5000, pendingIntent);
                 }
                 else
                 {
                     if (uit_glucose_characteristic_cmd != null) {
                         uit_glucose_characteristic_cmd.setValue(new byte[]{(byte) 0xc0});
                         check = bleGattService.writeCharacteristic(uit_glucose_characteristic_cmd);
+
                         if (check == 0)
                         {
-                            notifyAffect.makeFailed("No device connect");
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                                    startActivity(intent);
-                                    Toast.makeText(getActivity(), "Device: "+ ble_device_name +" turn off bluetooth", Toast.LENGTH_LONG).show();
+                                    notifyAffect.makeFailed("Device: "+ ble_device_name + " turn off bluetooth");
+                                    restApp = 1;
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            btnTakeSample.performClick();
+                                        }
+                                    },1000);
+
                                 }
-                            },2000);
+                            },3000);
+
+                            if (restApp == 1)
+                            {
+                                restApp = 0 ;
+                                System.exit(0);
+                            }
                         }
                     }
                     Handler mhandler = new Handler();
@@ -404,8 +429,12 @@ public class AddSampleFragment extends Fragment {
                     @Override
                     public void run() {
                         Intent intent = new Intent(getActivity(), MainActivity.class);
-                        startActivity(intent);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 1000,intent,
+                                PendingIntent.FLAG_CANCEL_CURRENT);
+                        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+                        alarmManager.set(AlarmManager.RTC,System.currentTimeMillis() + 5000, pendingIntent);
                         Toast.makeText(getActivity(), "Successfully disconnect bluetooth", Toast.LENGTH_LONG).show();
+                        System.exit(0);
                     }
                 },2000);
             }

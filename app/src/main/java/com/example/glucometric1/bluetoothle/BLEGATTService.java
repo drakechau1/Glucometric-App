@@ -255,7 +255,7 @@ public class BLEGATTService extends Service {
                 connectionState = STATE_DEVICE_ERROR;
                 bluetoothGatt.close();
                 bluetoothGatt = null;
-                Log.e(TAG, "Closed GATT, BLE device has been disconnected");
+                Log.e(TAG, "Closed GATT issues ERROR, BLE device has been disconnected");
                 broadcastUpdate(ACTION_DEVICE_ERROR);
             }
             else

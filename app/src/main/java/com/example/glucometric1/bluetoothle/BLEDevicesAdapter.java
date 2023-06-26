@@ -66,7 +66,7 @@ public class BLEDevicesAdapter extends BaseAdapter {
             MACAddress.setText(device.getAddress());
             String name = deviceName.getText().toString();
             String glucose_device = "UIT-GLUCOSE-202334684"; //Example ID of device
-            if (name.compareTo(glucose_device) == 0)
+            if (glucose_device.length() == name.length())
             {
                 Drawable myDrawable = ContextCompat.getDrawable(mContext, R.drawable.healthcare_cover);
                 imageView_device.setImageDrawable(myDrawable);

@@ -227,6 +227,7 @@ public class BLEActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, TakeSampleActivity.class);
                 intent.putExtra("ble_device_name", name);
                 intent.putExtra("ble_device_address", address);
+                Toast.makeText(this, "Bluetooth device successfully connected:"+ name.toString(), Toast.LENGTH_SHORT).show();
                 startActivity(intent);
                 //Set visible
                 btnConnect.setVisibility(View.GONE);
@@ -238,6 +239,10 @@ public class BLEActivity extends AppCompatActivity {
 ////                bleGattService.close();
 //                btnConnect.setText("Connect");
            }
+            else
+            {
+                Toast.makeText(this, "Bluetooth device unsuccessfully connected", Toast.LENGTH_SHORT).show();
+            }
         });
 
 
@@ -253,7 +258,7 @@ public class BLEActivity extends AppCompatActivity {
             btnConnect.setVisibility(View.VISIBLE);
             selected_item.setVisibility(View.VISIBLE);
 
-            if (name.compareTo(glucose_device) == 0)
+            if (glucose_device.length() == name.length())
             {
                 Drawable myDrawable = getResources().getDrawable(R.drawable.healthcare_cover);
                 imageView_device.setImageDrawable(myDrawable);

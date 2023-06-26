@@ -6,9 +6,11 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.example.glucometric1.bluetoothle.BLEGATTService;
 import com.example.glucometric1.takesample.AddSampleFragment;
 import com.example.glucometric1.takesample.MyFragment2Adapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -20,7 +22,7 @@ public class TakeSampleActivity extends AppCompatActivity {
 
     private String ble_device_name;
     private String ble_device_address;
-
+    private BLEGATTService blegattServiceCheck;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +33,7 @@ public class TakeSampleActivity extends AppCompatActivity {
         ble_device_address = intent.getStringExtra("ble_device_address");
 
         Log.i(Thread.currentThread().getStackTrace()[2].getClassName().toString(), "Opened");
-
+        
         mViewPager2 = (ViewPager2) findViewById(R.id.viewPager2);
         mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView);
 

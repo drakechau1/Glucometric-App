@@ -30,7 +30,7 @@ public class BLEScannerService extends Service {
     // Assigned variables
     private static final boolean SCAN_STATUS_SCANNING = true;
     private static final boolean SCAN_STATUS_STOPPED = false;
-    private static final long SCAN_PERIOD = 15000;
+    private static final long SCAN_PERIOD = 10000;
 
     private final Handler handler = new Handler();
     private final List<ScanFilter> scanFilters;

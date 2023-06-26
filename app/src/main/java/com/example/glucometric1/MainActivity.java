@@ -12,10 +12,10 @@ import android.view.animation.AnimationUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public static final float APP_MOBILE_VERSION = 1.0;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
+    public static final float APP_MOBILE_VERSION = 1.00F;
     Animation topAmin , bottomAmin, leftAmin;
     ImageView logo;
     TextView logoName, categories_label;
