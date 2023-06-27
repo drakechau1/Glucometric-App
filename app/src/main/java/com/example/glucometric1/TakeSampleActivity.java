@@ -33,7 +33,7 @@ public class TakeSampleActivity extends AppCompatActivity {
         ble_device_address = intent.getStringExtra("ble_device_address");
 
         Log.i(Thread.currentThread().getStackTrace()[2].getClassName().toString(), "Opened");
-        
+
         mViewPager2 = (ViewPager2) findViewById(R.id.viewPager2);
         mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView);
 
