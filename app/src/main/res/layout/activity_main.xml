@@ -165,7 +165,7 @@
                     android:layout_height="97dp"
                     android:layout_marginTop="15dp"
                     android:layout_marginLeft="25dp"
-                    android:src="@drawable/icon_cloud" />
+                    android:src="@drawable/icon_history" />
 
                 <TextView
                     android:id="@+id/textViewDataset"
@@ -175,7 +175,7 @@
                     android:fontFamily="@font/abril_fatface"
                     android:gravity="center"
                     android:onClick="changeActivity"
-                    android:text="Dataset"
+                    android:text="History Data"
                     android:textColor="#FFFFFF"
                     android:textSize="22sp" />
             </androidx.cardview.widget.CardView>

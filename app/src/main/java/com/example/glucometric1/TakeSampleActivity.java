@@ -22,7 +22,6 @@ public class TakeSampleActivity extends AppCompatActivity {
 
     private String ble_device_name;
     private String ble_device_address;
-    private BLEGATTService blegattServiceCheck;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

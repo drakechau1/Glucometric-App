@@ -106,7 +106,7 @@ public class AddSampleFragment extends Fragment {
     private  static TextView buttonDisconnectDevice;
     private static boolean isDeviceConnected;
 
-    private LottieDialog lottieDialog;
+    private LottieDialog lottieDialog, lottieDialog_TakeSample;
 
     // TODO: Rename and change types and number of parameters
     public static AddSampleFragment newInstance(String param1, String param2) {
@@ -194,6 +194,7 @@ public class AddSampleFragment extends Fragment {
                         // Now convert string into ArrayList
                         arrayList = new ArrayList<String>(Arrays.asList(temp_array));
                         updateBarChart(temp_array);
+                        lottieDialog_TakeSample.dismiss();
                     }
                 default:
                     break;
@@ -228,6 +229,19 @@ public class AddSampleFragment extends Fragment {
                     .setAnimationRepeatCount(LottieDrawable.INFINITE)
                     .setAutoPlayAnimation(true)
                     .setMessage("Updating to Database...")
+                    .setMessageTextSize(18)
+                    .setDialogBackground(Color.WHITE)
+                    .setDialogHeight(1000)
+                    .setDialogWidth(1000)
+                    .setCancelable(false);
+
+            lottieDialog_TakeSample = new LottieDialog(getActivity())
+                    .setAnimation(R.raw.medical_shield)
+                    .setAnimationViewHeight(2000)
+                    .setAnimationViewHeight(2000)
+                    .setAnimationRepeatCount(LottieDrawable.INFINITE)
+                    .setAutoPlayAnimation(true)
+                    .setMessage("Retrieving data...")
                     .setMessageTextSize(18)
                     .setDialogBackground(Color.WHITE)
                     .setDialogHeight(1000)
@@ -293,17 +307,20 @@ public class AddSampleFragment extends Fragment {
 //                String cmd = "0x01C0";
 //                byte[] cmd = {0xc0};
                 Log.d(TAG, "Taking data");
+                lottieDialog_TakeSample.show();
                 if (!isDeviceConnected)
                 {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
+
                             notifyAffect.makeFailed("No Device GlucoMetric Connected");
+                            lottieDialog_TakeSample.dismiss();
                         }
                     },2000);
                     Intent intent = new Intent(getActivity(), MainActivity.class);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 1000,intent,
-                            PendingIntent.FLAG_CANCEL_CURRENT);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 1000, intent,
+                            PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                     AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
                     alarmManager.set(AlarmManager.RTC,System.currentTimeMillis() + 5000, pendingIntent);
                 }
@@ -315,6 +332,7 @@ public class AddSampleFragment extends Fragment {
 
                         if (check == 0)
                         {
+                            lottieDialog_TakeSample.dismiss();
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -341,10 +359,11 @@ public class AddSampleFragment extends Fragment {
                     mhandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+
                             Log.d(TAG, "Read characteristic");
                             bleGattService.readCharacteristic(uit_glucose_characteristic_data);
                         }
-                    }, 7000);
+                    }, 10000);
                 }
 
             }
@@ -429,8 +448,8 @@ public class AddSampleFragment extends Fragment {
                     @Override
                     public void run() {
                         Intent intent = new Intent(getActivity(), MainActivity.class);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 1000,intent,
-                                PendingIntent.FLAG_CANCEL_CURRENT);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 1000, intent,
+                                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
                         alarmManager.set(AlarmManager.RTC,System.currentTimeMillis() + 5000, pendingIntent);
                         Toast.makeText(getActivity(), "Successfully disconnect bluetooth", Toast.LENGTH_LONG).show();
