@@ -175,9 +175,9 @@
                     android:fontFamily="@font/abril_fatface"
                     android:gravity="center"
                     android:onClick="changeActivity"
-                    android:text="History Data"
+                    android:text="Data Histories"
                     android:textColor="#FFFFFF"
-                    android:textSize="22sp" />
+                    android:textSize="21sp" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView

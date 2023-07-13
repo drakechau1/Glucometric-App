@@ -5,12 +5,84 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DatasetActivity">
+<com.example.glucometric1.BounceScrollView
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Dataset activity"
-        tools:layout_editor_absoluteX="177dp"
-        tools:layout_editor_absoluteY="350dp" />
+    <LinearLayout
+        android:id="@+id/layout_1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/arvo"
+            android:text="Histories Of Data"
+            android:textColor="@color/red"
+            android:layout_marginTop="10dp"
+            android:textSize="25sp" />
+        <com.example.glucometric1.custom_textview.PoppinsMediumTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Good Morning"
+            android:textSize="16sp"
+            android:layout_marginStart="16dp"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            android:id="@+id/Greeting_textview"/>
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="390dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/historydata" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chart Blood Glucose Value"
+            android:textSize="16sp"
+            android:textStyle="italic"
+            android:textColor="#986B6B"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"/>
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/line_chart"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginTop="5dp"
+            android:padding="5dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Blood Glucose Check"
+            android:textSize="16sp"
+            android:textStyle="italic"
+            android:textColor="#986B6B"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"/>
+
+        <ListView
+            android:id="@+id/list_view"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:layout_marginTop="5dp"
+            android:transcriptMode="alwaysScroll" />
+    </LinearLayout>
+</com.example.glucometric1.BounceScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

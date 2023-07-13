@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "275651468452",
+    "project_id": "glucometric",
+    "storage_bucket": "glucometric.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275651468452:android:6b088754497e8914abda31",
+        "android_client_info": {
+          "package_name": "com.example.glucometric1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "275651468452-kk4h6gfk5h6qi7sthiti0sqlb4c01tn4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBffr32TdnkEUwmjMFWptcOprFmLsG5B54"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "275651468452-kk4h6gfk5h6qi7sthiti0sqlb4c01tn4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

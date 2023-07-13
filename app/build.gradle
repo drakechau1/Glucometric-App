@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -63,6 +64,7 @@ dependencies {
     implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation 'androidx.compose.material3:material3'
     implementation platform('androidx.compose:compose-bom:2022.10.00')
+    implementation 'com.google.firebase:firebase-database:20.1.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -80,4 +82,6 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
     implementation 'com.airbnb.android:lottie:4.2.0'
     implementation 'com.github.amrdeveloper:lottiedialog:1.0.0'
+    // below line is use for image loading library
+    implementation 'com.squareup.picasso:picasso:2.71828'
 }

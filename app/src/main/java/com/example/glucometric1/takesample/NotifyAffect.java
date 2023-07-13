@@ -13,7 +13,7 @@ public class NotifyAffect {
     private FragmentActivity activity;
     private Vibrator vibrator;
 
-    NotifyAffect(FragmentActivity activity) {
+    public NotifyAffect(FragmentActivity activity) {
         if (activity == null) {
             Log.e("NotifyAffect", "Null activity");
             return;
