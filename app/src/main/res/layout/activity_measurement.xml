@@ -6,11 +6,293 @@
     android:layout_height="match_parent"
     tools:context=".MeasurementActivity">
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Measurement activity"
-        tools:layout_editor_absoluteX="180dp"
-        tools:layout_editor_absoluteY="358dp" />
+    <com.example.glucometric1.BounceScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="5dp"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#C6C6C6"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textViewConnectionStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:fontFamily="sans-serif"
+                android:gravity="start"
+                android:text="Success connection: &quot;device_ble&quot;"
+                android:textColor="#986B6B"
+                android:textSize="16sp"
+                android:textStyle="italic"
+                tools:ignore="TextSizeCheck" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
+            <com.example.glucometric1.custom_textview.PoppinsMediumTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Good Morning"
+                android:textSize="16sp"
+                android:layout_marginStart="16dp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:id="@+id/Greeting_textview"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Measure your"
+                android:textColor="#910707"
+                android:textStyle="bold"
+                android:layout_marginStart="5dp"
+                android:textSize="25sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="blood glucose"
+                android:fontFamily="sans-serif-black"
+                android:textColor="#910707"
+                android:textStyle="bold"
+                android:layout_marginStart="5dp"
+                android:textSize="25sp"/>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="400dp"
+                    android:layout_height="335dp"
+                    android:layout_gravity="center"
+                    android:indeterminateOnly="false"
+                    android:progressDrawable="@drawable/circular_determinate_progressbar"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imageView_button"
+                    app:layout_constraintVertical_bias="0.0"
+                    tools:progress="60" />
+
+                <ImageView
+                    android:id="@+id/imageView_button"
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:src="@drawable/healthcare_cover"
+                    app:layout_constraintBottom_toBottomOf="@+id/progress_bar"
+                    app:layout_constraintEnd_toEndOf="@+id/progress_bar"
+                    app:layout_constraintStart_toStartOf="@+id/progress_bar"
+                    app:layout_constraintTop_toTopOf="@+id/progress_bar"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/textViewhold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:text="Hold your finger on device for measuring"
+                android:textColor="#986B6B"
+                android:textSize="18sp"
+                android:textStyle="italic"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Measuring result"
+                android:textColor="#910707"
+                android:textStyle="bold"
+                android:layout_marginStart="5dp"
+                android:textSize="25sp"/>
+            <LinearLayout
+                android:id="@+id/itemlistView_data_history"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/custom_slider"
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_margin="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="MissingConstraints">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textview_value"
+                        android:layout_width="90dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="20dp"
+                        android:fontFamily="@font/archivo_black"
+                        android:padding="1dp"
+                        android:text="128"
+                        android:textColor="#C80606"
+                        android:textSize="40sp" />
+
+                    <TextView
+                        android:id="@+id/textView9"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="mg/dL"
+                        android:textColor="#6C0101"
+                        android:textSize="18sp"
+                        android:textStyle="italic" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/patient_name_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:fontFamily="@font/arvo"
+                            android:padding="5dp"
+                            android:text="Name:"
+                            android:textColor="#450202"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:id="@+id/editText_patient_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:fontFamily="@font/arvo"
+                            android:padding="5dp"
+                            android:ems="10"
+                            android:textColor="#450202"
+                            android:textSize="20sp"
+                            android:inputType="text"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/patient_gender_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/arvo"
+                            android:padding="2dp"
+                            android:text="Gender:"
+                            android:textColor="#450202"
+                            android:textSize="18sp" />
+
+                        <Spinner
+                            android:id="@+id/spinnerSex"
+                            android:layout_width="93dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="1dp"
+                            android:layout_marginTop="2dp"
+                            android:padding="2dp"
+                            android:textColor="#3A2020"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/patient_age_lable"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/arvo"
+                            android:padding="2dp"
+                            android:text="Age:"
+                            android:textColor="#450202"
+                            android:textSize="18sp" />
+
+                        <EditText
+                            android:id="@+id/patient_age"
+                            android:layout_width="50dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="1dp"
+                            android:layout_marginTop="2dp"
+                            android:gravity="center"
+                            android:hint="0"
+                            android:inputType="number"
+                            android:textColor="#3A2020"
+                            android:textSize="18sp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/time_date_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:text="Time:"
+                            android:textColor="#684444"
+                            android:textSize="17sp"
+                            android:textStyle="normal|italic" />
+
+                        <TextView
+                            android:id="@+id/time_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:text="31/01/2023 11:11:11"
+                            android:textColor="#684444"
+                            android:textSize="17sp"
+                            android:textStyle="normal|italic" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/button_save"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/custom_button_gradient"
+                android:textAlignment="center"
+                android:text="Save Result"
+                android:layout_marginTop="5dp"/>
+        </LinearLayout>
+    </com.example.glucometric1.BounceScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
