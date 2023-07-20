@@ -1,5 +1,6 @@
 package com.example.glucometric1;
 
+import android.app.Dialog;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -232,21 +235,49 @@ public class BLEActivity extends AppCompatActivity {
             if (isConnected == BLEGATTService.STATE_DISCONNECTED) {
                 String name = ((TextView) selected_item.findViewById(R.id.ble_device_name)).getText().toString();
                 String address = ((TextView) selected_item.findViewById(R.id.ble_device_address)).getText().toString();
-//                bleGattService.connect(address);
-                Intent intent = new Intent(this, TakeSampleActivity.class);
-                intent.putExtra("ble_device_name", name);
-                intent.putExtra("ble_device_address", address);
-                Toast.makeText(this, "Bluetooth device successfully connected:"+ name.toString(), Toast.LENGTH_SHORT).show();
-                startActivity(intent);
+
+                final Dialog dialogDisconnectDevice = new Dialog(BLEActivity.this);
+                dialogDisconnectDevice.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialogDisconnectDevice.setContentView(R.layout.custom_layout_dialog_choose_option);
+                Window window = dialogDisconnectDevice.getWindow();
+                if (window == null)
+                {
+                    Toast.makeText(BLEActivity.this, "No window",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                dialogDisconnectDevice.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialogDisconnectDevice.setCancelable(false);
+
+                Button buttonTakeSample = dialogDisconnectDevice.findViewById(R.id.buttonTakeSample);
+                Button buttonMearsurement  = dialogDisconnectDevice.findViewById(R.id.buttonMeasurement);
+
+                buttonTakeSample.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(BLEActivity.this, TakeSampleActivity.class);
+                        intent.putExtra("ble_device_name", name);
+                        intent.putExtra("ble_device_address", address);
+                        Toast.makeText(BLEActivity.this, "Bluetooth device successfully connected:"+ name.toString(), Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+                    }
+                });
+
+                buttonMearsurement.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(BLEActivity.this, MeasurementActivity.class);
+                        intent.putExtra("ble_device_name", name);
+                        intent.putExtra("ble_device_address", address);
+                        Toast.makeText(BLEActivity.this, "Bluetooth device successfully connected:"+ name.toString(), Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+                    }
+                });
+
+                dialogDisconnectDevice.show();
                 //Set visible
                 btnConnect.setVisibility(View.GONE);
                 selected_item.setVisibility(View.GONE);
                 lvBleDevices.setVisibility(View.GONE);
-                //btnConnect.setText("Disconnect");
-                //            finish();
-//            } else if (isConnected == BLEGATTService.STATE_CONNECTED) {
-////                bleGattService.close();
-//                btnConnect.setText("Connect");
            }
             else
             {

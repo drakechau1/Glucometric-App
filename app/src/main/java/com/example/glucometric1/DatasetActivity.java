@@ -99,12 +99,12 @@ public class DatasetActivity extends AppCompatActivity {
                 if (snapshot.hasChildren()) {
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    String nameFromDB = dataSnapshot.child("Name").getValue().toString();
-                    String ageFromDB = dataSnapshot.child("Age").getValue().toString();
-                    String timestampFromDB = dataSnapshot.child("Timestamp").getValue().toString();
-                    String genderFromDB = dataSnapshot.child("Gender").getValue().toString();
-                    String glucoseFromDB = dataSnapshot.child("Glucose").getValue().toString();
-                    String idFromDB     = dataSnapshot.child("ID").getValue().toString();
+                    String nameFromDB = dataSnapshot.child("name").getValue().toString();
+                    String ageFromDB = dataSnapshot.child("age").getValue().toString();
+                    String timestampFromDB = dataSnapshot.child("timestamp").getValue().toString();
+                    String genderFromDB = dataSnapshot.child("gender").getValue().toString();
+                    String glucoseFromDB = dataSnapshot.child("glucose").getValue().toString();
+                    String idFromDB     = dataSnapshot.child("id").getValue().toString();
                     AddDataHistory(nameFromDB, genderFromDB, timestampFromDB, ageFromDB, glucoseFromDB);
                     Data_Glucose = Float.parseFloat(glucoseFromDB);
                     float id = Float.parseFloat(idFromDB);

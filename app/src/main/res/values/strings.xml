@@ -34,5 +34,6 @@
     <string name="are_you_sure_want_to_disconnect_bluetooth">Are you sure ?</string>
     <string name="the_system_monitors_blood_glucose_levels_continuously_you_can_also_control_blood_glucose_levels_to_adjust_your_diet_accordingly">The system monitors blood glucose levels continuously. You can also control blood glucose levels to adjust your diet accordingly.</string>
     <string name="underline">____</string>
+    <string name="todo">TODO</string>
 
 </resources>
