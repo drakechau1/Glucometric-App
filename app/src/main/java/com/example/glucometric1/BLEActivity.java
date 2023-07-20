@@ -2,6 +2,8 @@ package com.example.glucometric1;
 
 import android.app.Dialog;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -29,66 +31,41 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieDrawable;
 import com.amrdeveloper.lottiedialog.LottieDialog;
 import com.example.glucometric1.bluetoothle.BLEDevicesAdapter;
 import com.example.glucometric1.bluetoothle.BLEGATTService;
-import com.example.glucometric1.bluetoothle.BLEScannerService;
+import com.example.glucometric1.bluetoothle.BleScanner;
+
+import java.util.List;
 
 public class BLEActivity extends AppCompatActivity {
-    private final static String TAG = "BLEActivity";
+    private static final String TAG = "BLEActivity";
 
-    //
-    //
     // Widget variables
-    Button btnStop, btnConnect;
-    ImageButton btnScan;
-    //TextView tvStatus;
-    LinearLayout selected_item;
-    ListView lvBleDevices;
-    ImageView imageView_device;
+    private Button btnConnect;
+    private ImageButton btnScan;
+    private LinearLayout selected_item;
+    private ListView lvBleDevices;
+    private ImageView imageView_device;
 
-    LottieDialog lottieDialog;
-    //
-    //
-    // Assigned variables
-    int isConnected = BLEGATTService.STATE_DISCONNECTED;
-    //
-    //
-    // Unassigned variables
-    BLEScannerService bleScannerService;
-    BLEGATTService bleGattService;
-    //
-    //
-    // Binding connections
-    private final ServiceConnection bleScannerConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            BLEScannerService.LocalBinder binder = (BLEScannerService.LocalBinder) iBinder;
-            bleScannerService = binder.getService();
-            if (bleScannerService != null) {
-                if (!bleScannerService.initialize()) {
-                    Log.e(TAG, "Ble scanner init failed");
-                    return;
-                }
-                Log.d(TAG, "Ble scanner init successfully");
-            } else {
-                Log.e(TAG, "Unable to get bleScannerService");
-            }
-        }
+    // BLE Variables
+    private int isConnected = BLEGATTService.STATE_DISCONNECTED;
+    private BleScanner bleScanner;
+    private BLEGATTService bleGattService;
 
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
+    // Lottie Dialog
+    private LottieDialog lottieDialog;
 
-        }
-    };
+    // Constants
+    private static final int PERMISSION_REQUEST_BLUETOOTH = 1;
+
+    // Service Connection
     private final ServiceConnection bleGattConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder iBinder) {
-            BLEGATTService.LocalBinder binder = ((BLEGATTService.LocalBinder) iBinder);
+            BLEGATTService.LocalBinder binder = (BLEGATTService.LocalBinder) iBinder;
             bleGattService = binder.getService();
             if (bleGattService != null) {
                 if (!bleGattService.initialize()) {
@@ -107,68 +84,72 @@ public class BLEActivity extends AppCompatActivity {
         }
     };
 
-    //
-    //
-    // BroadcastReceiver handler
-    private final BroadcastReceiver bleScannerReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            switch (action) {
-                case BLEScannerService.ACTION_SCAN_DONE:
-                    Log.d(TAG, "BLEScannerService.ACTION_SCAN_DONE");
-                    Log.d(TAG, String.format("Total of ble device: %d", bleScannerService.getBleDevices().size()));
-                    Toast.makeText(getApplicationContext(), "Scan successfully", Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getApplicationContext(),String.format("%d devices founded",bleScannerService.getBleDevices().size()),Toast.LENGTH_SHORT).show();
-                    lottieDialog.dismiss();
-                    break;
-                case BLEScannerService.ACTION_SCAN_NEW_DEVICE:
-                    BLEDevicesAdapter bleDevicesAdapter = new BLEDevicesAdapter(getApplicationContext(), bleScannerService.getBleDevices());
-                    lvBleDevices.setAdapter(bleDevicesAdapter);
-                    lvBleDevices.deferNotifyDataSetChanged();
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
+    // BroadcastReceiver for GATT Service
     private final BroadcastReceiver bleGattReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             switch (action) {
                 case BLEGATTService.ACTION_GATT_CONNECTED:
-                    //tvStatus.setText(getResources().getString(R.string.label_ble_connected));
-                    Log.e(TAG, "GATT connected");
                     isConnected = BLEGATTService.STATE_CONNECTED;
                     break;
                 case BLEGATTService.ACTION_GATT_DISCONNECTED:
-                    //tvStatus.setText(getResources().getString(R.string.label_ble_disconnected));
-                    Log.e(TAG, "GATT disconnected");
                     isConnected = BLEGATTService.STATE_DISCONNECTED;
                     break;
                 case BLEGATTService.ACTION_DEVICE_ERROR:
                     isConnected = BLEGATTService.STATE_DEVICE_ERROR;
-                    Log.e(TAG, "Device turn off");
+                    break;
                 default:
                     break;
             }
         }
     };
 
-    //
-    //
-    // Override functions
+    // Scan Callback for BLE Scanner
+    private final ScanCallback scanCallback = new ScanCallback() {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            super.onScanResult(callbackType, result);
+
+            if (ActivityCompat.checkSelfPermission(BLEActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+
+            BluetoothDevice device = result.getDevice();
+            if (device.getName() != null && !bleScanner.getScannedDevices().contains(device)) {
+                bleScanner.addScannedDevice(device);
+                updateDeviceList();
+            }
+        }
+
+        @Override
+        public void onBatchScanResults(List<ScanResult> results) {
+            super.onBatchScanResults(results);
+        }
+
+        @Override
+        public void onScanFailed(int errorCode) {
+            super.onScanFailed(errorCode);
+            Log.e("Error code", String.valueOf(errorCode));
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ble);
         Log.d(TAG, "onCreate");
 
+        initView();
+        initBLEScanner();
+        initListeners();
+
+        btnConnect.setEnabled(false);
+    }
+
+    private void initView() {
         btnScan = findViewById(R.id.buttonBLEScan);
-        //btnStop = findViewById(R.id.buttonBLEStop);
         btnConnect = findViewById(R.id.buttonBLEConnect);
-        //tvStatus = findViewById(R.id.textviewBLEStatus);
         lvBleDevices = findViewById(R.id.listview_ble_devices);
         selected_item = findViewById(R.id.selected_device_info);
         imageView_device = findViewById(R.id.imageView_device);
@@ -185,51 +166,47 @@ public class BLEActivity extends AppCompatActivity {
                 .setDialogHeight(1000)
                 .setDialogWidth(1000)
                 .setCancelable(false);
+    }
 
-        //Set visible
-        btnConnect.setVisibility(View.GONE);
-        selected_item.setVisibility(View.GONE);
-
+    private void initBLEScanner() {
         // Use this check to determine whether Bluetooth classic is supported on the device.
         // Then you can selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             finish();
+            return;
         }
+
         // Use this check to determine whether BLE is supported on the device. Then
         // you can selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             finish();
-        }
-        // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
-        // BluetoothAdapter through BluetoothManager.
-        final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-
-        // Checks if Bluetooth is supported on the device.
-        if (bluetoothManager == null) {
-            Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Initializes a Bluetooth adapter. For API level 18 and above, get a reference to
+        // BluetoothAdapter through BluetoothManager.
+        final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        if (bluetoothManager == null) {
+            Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        bleScanner = new BleScanner(bluetoothManager.getAdapter());
+    }
+
+    private void initListeners() {
         btnScan.setOnClickListener(view -> {
-            if (bleScannerService != null) {
-                Log.i("btnScan", "Scanning BLE devices");
+            if (bleScanner != null) {
+                startScanning();
                 lvBleDevices.setVisibility(View.VISIBLE);
-                bleScannerService.startScan();
                 lottieDialog.show();
             } else {
-                Log.i("btnScan", "bleScannerService is null");
+                Log.i(TAG, "bleScannerService is null");
             }
         });
-//        btnStop.setOnClickListener(view -> {
-//            if (bleScannerService != null) {
-//                Log.i("btnStop", "Stop BLE scanner");
-//                bleScannerService.stopScan();
-//            } else {
-//                Log.i("btnStop", "bleScannerService is null");
-//            }
-//        });
 
         btnConnect.setOnClickListener(view -> {
             if (isConnected == BLEGATTService.STATE_DISCONNECTED) {
@@ -285,7 +262,6 @@ public class BLEActivity extends AppCompatActivity {
             }
         });
 
-
         lvBleDevices.setOnItemClickListener((adapterView, view, i, l) -> {
             TextView device_name = selected_item.findViewById(R.id.ble_device_name);
             TextView device_address = selected_item.findViewById(R.id.ble_device_address);
@@ -293,62 +269,60 @@ public class BLEActivity extends AppCompatActivity {
             String address = ((TextView) view.findViewById(R.id.ble_device_address)).getText().toString();
             device_name.setText(name);
             device_address.setText(address);
-            String glucose_device = "UIT-GLUCOSE-202334684"; //Example ID of device to get long ID
-            //Set Visibility
-            btnConnect.setVisibility(View.VISIBLE);
-            selected_item.setVisibility(View.VISIBLE);
 
-            if (glucose_device.length() == name.length())
-            {
-                Drawable myDrawable = getResources().getDrawable(R.drawable.healthcare_cover);
-                imageView_device.setImageDrawable(myDrawable);
-            }
-            else
-            {
-                Drawable myDrawable = getResources().getDrawable(R.drawable.icon_bluetooth2png);
-                imageView_device.setImageDrawable(myDrawable);
+            btnConnect.setEnabled(true);
+
+            String glucoseDevice = "UIT-GLUCOSE-202334684"; // Example ID of device to get long ID
+
+            if (glucoseDevice.length() == name.length()) {
+                imageView_device.setImageResource(R.drawable.healthcare_cover);
+            } else {
+                imageView_device.setImageResource(R.drawable.icon_bluetooth2png);
             }
         });
+    }
+
+    private void startScanning() {
+        bleScanner.startScanning(scanCallback);
+        new Handler().postDelayed(this::stopScanning, bleScanner.SCAN_PERIOD);
+    }
+
+    private void stopScanning() {
+        bleScanner.stopScanning();
+        updateDeviceList();
+        lottieDialog.dismiss();
+    }
+
+    private void updateDeviceList() {
+        BLEDevicesAdapter bleDevicesAdapter = new BLEDevicesAdapter(getApplicationContext(), bleScanner.getScannedDevices());
+        lvBleDevices.setAdapter(bleDevicesAdapter);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         Log.d(TAG, "onStart");
-        Intent scannerServiceIntent = new Intent(this, BLEScannerService.class);
-        bindService(scannerServiceIntent, bleScannerConnection, Context.BIND_AUTO_CREATE);
         Intent gattServiceIntent = new Intent(this, BLEGATTService.class);
         bindService(gattServiceIntent, bleGattConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop");
-        unbindService(bleScannerConnection);
-        unbindService(bleGattConnection);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(bleScannerReceiver);
-        unregisterReceiver(bleGattReceiver);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        registerReceiver(bleScannerReceiver, BLEScannerService.intentFilter());
         registerReceiver(bleGattReceiver, BLEGATTService.intentFilter());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(bleGattReceiver);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        unbindService(bleScannerConnection);
-//        unbindService(bleGattConnection);
+        unbindService(bleGattConnection);
         Log.d(TAG, "onDestroy");
     }
 }
