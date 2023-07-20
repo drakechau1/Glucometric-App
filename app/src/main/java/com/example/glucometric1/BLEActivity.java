@@ -1,6 +1,7 @@
 package com.example.glucometric1;
 
 import android.app.Dialog;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
@@ -110,10 +111,6 @@ public class BLEActivity extends AppCompatActivity {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
-
-            if (ActivityCompat.checkSelfPermission(BLEActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
 
             BluetoothDevice device = result.getDevice();
             if (device.getName() != null && !bleScanner.getScannedDevices().contains(device)) {

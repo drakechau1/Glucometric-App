@@ -88,7 +88,7 @@ public class MeasurementActivity extends AppCompatActivity {
     private NotifyAffect notifyAffect;
     private static ArrayList<String> arrayList = new ArrayList<>();
     private static String APP_SCRIPT_URL;
-    private static int id_counter = 8;
+    private static int id_counter;
     private static int check = 1;
     private static int restApp = 0;
     BLEGATTService bleGattService;
@@ -323,7 +323,6 @@ public class MeasurementActivity extends AppCompatActivity {
             switch (action) {
                 case BLEGATTService.ACTION_GATT_CONNECTED:
                     textViewConnectionStatus.setText("Success connection: " + ble_device_name);
-                    //buttonDisconnectDevice.setVisibility(View.VISIBLE);
                     isDeviceConnected = true;
                     Log.d("bleGattReceiver", "BLE connected");
                     break;
@@ -417,9 +416,6 @@ public class MeasurementActivity extends AppCompatActivity {
     }
     private void volleyHTTPRequest(int requestMethod, String query) {
 
-        //progressBarSavaData.setVisibility(View.VISIBLE);
-        //setEnableComponent(false);
-
         String url = APP_SCRIPT_URL + query;
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(requestMethod, url, new Response.Listener<String>() {
@@ -427,10 +423,8 @@ public class MeasurementActivity extends AppCompatActivity {
             public void onResponse(String response) {
                 Log.i("onResponse", response);
 
-                notifyAffect.makeSuccess("Update data to Database successfully");
-                //lottieDialog.dismiss();
-                //progressBarSavaData.setVisibility(View.GONE);
-                //setEnableComponent(true);
+                //notifyAffect.makeSuccess("Update data to Database successfully");
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -499,12 +493,9 @@ public class MeasurementActivity extends AppCompatActivity {
     }
     private void RequestDataDB()
     {
-
         try {
-            //lottieDialog_measurement.show();
             //If input data is not correct
             if(!checkName() || !checkAge()){
-
                 return;
             }else{
                 //Get all the value from the form
@@ -514,22 +505,19 @@ public class MeasurementActivity extends AppCompatActivity {
                 String device_id     = ble_device_name;
                 String glucose_value = textview_value.getText().toString();
                 String gender_patient= spinnerSex.getSelectedItem().toString();
-                String id_db            = String.valueOf(id_counter);
-                Log.i("DataSet", "ID:"+ id_db);
-                User user = new User(name_patient,age_patient,time_stamp,device_id,glucose_value,gender_patient, id_db);
-                DatabaseReference database = FirebaseDatabase.getInstance().getReference("User");
-                Query checkUser = database.orderByChild("id").equalTo(id_counter);
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("User");
+                Query checkUser = database.orderByKey();
                 checkUser.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.exists()) {
-                            notifyAffect.makeFailed("Something wrong");
-                        }
-                        else{
-                            database.child(id_db).setValue(user);
-                            Toast.makeText(MeasurementActivity.this, "Update data successfully", Toast.LENGTH_SHORT).show();
-                            id_counter++;
-                        }
+                        int total  =(int)snapshot.getChildrenCount();
+                        id_counter = total;
+                        total = total + 1;
+                        String id_db = String.valueOf(total);
+                        Log.i("DataSet", "ID:"+ id_db);
+                        User user = new User(name_patient,age_patient,time_stamp,device_id,glucose_value,gender_patient, id_db);
+                        database.child(id_db).setValue(user);
+                        Toast.makeText(MeasurementActivity.this, "Update data successfully", Toast.LENGTH_SHORT).show();
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
