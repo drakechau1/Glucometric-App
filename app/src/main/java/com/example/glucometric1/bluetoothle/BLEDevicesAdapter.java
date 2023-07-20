@@ -18,18 +18,19 @@ import androidx.core.content.ContextCompat;
 import com.example.glucometric1.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class BLEDevicesAdapter extends BaseAdapter {
     Context mContext;
-    ArrayList<BluetoothDevice> mDevices;
+    List<BluetoothDevice> mDevices;
     LayoutInflater mInflater;
 
     ImageView imageView_device;
     Animation rightAmin;
 
 
-    public BLEDevicesAdapter(Context context, ArrayList<BluetoothDevice> devices) {
+    public BLEDevicesAdapter(Context context, List<BluetoothDevice> devices) {
         mContext = context;
         mDevices = devices;
         mInflater = (LayoutInflater.from(context));
