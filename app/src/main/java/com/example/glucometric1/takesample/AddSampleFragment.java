@@ -327,7 +327,7 @@ public class AddSampleFragment extends Fragment {
                 else
                 {
                     if (uit_glucose_characteristic_cmd != null) {
-                        uit_glucose_characteristic_cmd.setValue(new byte[]{(byte) 0xc0});
+                        uit_glucose_characteristic_cmd.setValue(new byte[]{(byte) 0xf0});
                         check = bleGattService.writeCharacteristic(uit_glucose_characteristic_cmd);
 
                         if (check == 0)

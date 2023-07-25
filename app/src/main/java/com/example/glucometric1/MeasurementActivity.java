@@ -85,10 +85,11 @@ public class MeasurementActivity extends AppCompatActivity {
     private Spinner spinnerSex;
     private static boolean isDeviceConnected;
     private static BluetoothGattCharacteristic uit_glucose_characteristic_data, uit_glucose_characteristic_cmd;
+    private static BluetoothGattCharacteristic uit_glucose_characteristic_value;
     private NotifyAffect notifyAffect;
     private static ArrayList<String> arrayList = new ArrayList<>();
     private static String APP_SCRIPT_URL;
-    private static int id_counter = 8;
+    private static int id_counter;
     private static int check = 1;
     private static int restApp = 0;
     BLEGATTService bleGattService;
@@ -169,6 +170,12 @@ public class MeasurementActivity extends AppCompatActivity {
                         displayValueTextView();
                         Toast.makeText(MeasurementActivity.this, "Blood glucose check finish", Toast.LENGTH_SHORT).show();
                         lottieDialog_measurement.dismiss();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                sendGlucoseValueToDevice();
+                            }
+                        },2000);
                     }
                 }, 10000);
             }
@@ -203,6 +210,55 @@ public class MeasurementActivity extends AppCompatActivity {
 
     }
 
+    private void sendGlucoseValueToDevice() {
+        Log.d("SendGlucoseValueToDevice", "Send glucose value to device");
+        if (!isDeviceConnected)
+        {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    notifyAffect.makeFailed("No Device GlucoMetric Connected");
+                    lottieDialog_measurement.dismiss();
+                }
+            },2000);
+        }
+        else
+        {
+            if (uit_glucose_characteristic_value != null) {
+                uit_glucose_characteristic_value.setValue(new byte[]{(byte) ValueGlucose});
+                check = bleGattService.writeCharacteristic(uit_glucose_characteristic_value);
+                Log.d("SendGlucoseValueToDevice", "ValueGlucose: " + ValueGlucose);
+                if (check == 0)
+                {
+                    lottieDialog_measurement.dismiss();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifyAffect.makeFailed("Device: "+ ble_device_name + " turn off bluetooth");
+                            restApp = 1;
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    imageView_button.performClick();
+                                }
+                            },1000);
+
+                        }
+                    },3000);
+
+                    if (restApp == 1)
+                    {
+                        restApp = 0 ;
+                        System.exit(0);
+                    }
+                }else {
+                    Log.d("SendGlucoseValueToDevice", "Send glucose value successfully");
+                }
+            }
+        }
+    }
+
     private void TakeSampleFuction() {
         //        String cmd = "0x01C0";
 //                byte[] cmd = {0xc0};
@@ -221,7 +277,7 @@ public class MeasurementActivity extends AppCompatActivity {
         else
         {
             if (uit_glucose_characteristic_cmd != null) {
-                uit_glucose_characteristic_cmd.setValue(new byte[]{(byte) 0xc0});
+                uit_glucose_characteristic_cmd.setValue(new byte[]{(byte) 0xf0});
                 check = bleGattService.writeCharacteristic(uit_glucose_characteristic_cmd);
 
                 if (check == 0)
@@ -323,7 +379,6 @@ public class MeasurementActivity extends AppCompatActivity {
             switch (action) {
                 case BLEGATTService.ACTION_GATT_CONNECTED:
                     textViewConnectionStatus.setText("Success connection: " + ble_device_name);
-                    //buttonDisconnectDevice.setVisibility(View.VISIBLE);
                     isDeviceConnected = true;
                     Log.d("bleGattReceiver", "BLE connected");
                     break;
@@ -346,6 +401,9 @@ public class MeasurementActivity extends AppCompatActivity {
                                 uit_glucose_characteristic_data = characteristic;
                             } else if (BLEGATTService.UIT_GLUCOSE_CMD.equals(uuid)) {
                                 uit_glucose_characteristic_cmd = characteristic;
+                            } else if (BLEGATTService.UIT_GLUCOSE_VALUE.equals(uuid)) {
+                               uit_glucose_characteristic_value = characteristic;
+                               Log.d("bleGattReceiver", "Characteristic_value");
                             }
                         }
                     }
@@ -417,9 +475,6 @@ public class MeasurementActivity extends AppCompatActivity {
     }
     private void volleyHTTPRequest(int requestMethod, String query) {
 
-        //progressBarSavaData.setVisibility(View.VISIBLE);
-        //setEnableComponent(false);
-
         String url = APP_SCRIPT_URL + query;
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(requestMethod, url, new Response.Listener<String>() {
@@ -427,10 +482,8 @@ public class MeasurementActivity extends AppCompatActivity {
             public void onResponse(String response) {
                 Log.i("onResponse", response);
 
-                notifyAffect.makeSuccess("Update data to Database successfully");
-                //lottieDialog.dismiss();
-                //progressBarSavaData.setVisibility(View.GONE);
-                //setEnableComponent(true);
+                //notifyAffect.makeSuccess("Update data to Database successfully");
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -499,12 +552,9 @@ public class MeasurementActivity extends AppCompatActivity {
     }
     private void RequestDataDB()
     {
-
         try {
-            //lottieDialog_measurement.show();
             //If input data is not correct
             if(!checkName() || !checkAge()){
-
                 return;
             }else{
                 //Get all the value from the form
@@ -514,22 +564,19 @@ public class MeasurementActivity extends AppCompatActivity {
                 String device_id     = ble_device_name;
                 String glucose_value = textview_value.getText().toString();
                 String gender_patient= spinnerSex.getSelectedItem().toString();
-                String id_db            = String.valueOf(id_counter);
-                Log.i("DataSet", "ID:"+ id_db);
-                User user = new User(name_patient,age_patient,time_stamp,device_id,glucose_value,gender_patient, id_db);
-                DatabaseReference database = FirebaseDatabase.getInstance().getReference("User");
-                Query checkUser = database.orderByChild("id").equalTo(id_counter);
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("User");
+                Query checkUser = database.orderByKey();
                 checkUser.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.exists()) {
-                            notifyAffect.makeFailed("Something wrong");
-                        }
-                        else{
-                            database.child(id_db).setValue(user);
-                            Toast.makeText(MeasurementActivity.this, "Update data successfully", Toast.LENGTH_SHORT).show();
-                            id_counter++;
-                        }
+                        int total  =(int)snapshot.getChildrenCount();
+                        id_counter = total;
+                        total = total + 1;
+                        String id_db = String.valueOf(total);
+                        Log.i("DataSet", "ID:"+ id_db);
+                        User user = new User(name_patient,age_patient,time_stamp,device_id,glucose_value,gender_patient, id_db);
+                        database.child(id_db).setValue(user);
+                        Toast.makeText(MeasurementActivity.this, "Update data successfully", Toast.LENGTH_SHORT).show();
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
