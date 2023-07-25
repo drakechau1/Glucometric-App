@@ -85,6 +85,7 @@ public class MeasurementActivity extends AppCompatActivity {
     private Spinner spinnerSex;
     private static boolean isDeviceConnected;
     private static BluetoothGattCharacteristic uit_glucose_characteristic_data, uit_glucose_characteristic_cmd;
+    private static BluetoothGattCharacteristic uit_glucose_characteristic_value;
     private NotifyAffect notifyAffect;
     private static ArrayList<String> arrayList = new ArrayList<>();
     private static String APP_SCRIPT_URL;
@@ -169,6 +170,12 @@ public class MeasurementActivity extends AppCompatActivity {
                         displayValueTextView();
                         Toast.makeText(MeasurementActivity.this, "Blood glucose check finish", Toast.LENGTH_SHORT).show();
                         lottieDialog_measurement.dismiss();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                sendGlucoseValueToDevice();
+                            }
+                        },2000);
                     }
                 }, 10000);
             }
@@ -203,6 +210,55 @@ public class MeasurementActivity extends AppCompatActivity {
 
     }
 
+    private void sendGlucoseValueToDevice() {
+        Log.d("SendGlucoseValueToDevice", "Send glucose value to device");
+        if (!isDeviceConnected)
+        {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    notifyAffect.makeFailed("No Device GlucoMetric Connected");
+                    lottieDialog_measurement.dismiss();
+                }
+            },2000);
+        }
+        else
+        {
+            if (uit_glucose_characteristic_value != null) {
+                uit_glucose_characteristic_value.setValue(new byte[]{(byte) ValueGlucose});
+                check = bleGattService.writeCharacteristic(uit_glucose_characteristic_value);
+                Log.d("SendGlucoseValueToDevice", "ValueGlucose: " + ValueGlucose);
+                if (check == 0)
+                {
+                    lottieDialog_measurement.dismiss();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifyAffect.makeFailed("Device: "+ ble_device_name + " turn off bluetooth");
+                            restApp = 1;
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    imageView_button.performClick();
+                                }
+                            },1000);
+
+                        }
+                    },3000);
+
+                    if (restApp == 1)
+                    {
+                        restApp = 0 ;
+                        System.exit(0);
+                    }
+                }else {
+                    Log.d("SendGlucoseValueToDevice", "Send glucose value successfully");
+                }
+            }
+        }
+    }
+
     private void TakeSampleFuction() {
         //        String cmd = "0x01C0";
 //                byte[] cmd = {0xc0};
@@ -221,7 +277,7 @@ public class MeasurementActivity extends AppCompatActivity {
         else
         {
             if (uit_glucose_characteristic_cmd != null) {
-                uit_glucose_characteristic_cmd.setValue(new byte[]{(byte) 0xc0});
+                uit_glucose_characteristic_cmd.setValue(new byte[]{(byte) 0xf0});
                 check = bleGattService.writeCharacteristic(uit_glucose_characteristic_cmd);
 
                 if (check == 0)
@@ -345,6 +401,9 @@ public class MeasurementActivity extends AppCompatActivity {
                                 uit_glucose_characteristic_data = characteristic;
                             } else if (BLEGATTService.UIT_GLUCOSE_CMD.equals(uuid)) {
                                 uit_glucose_characteristic_cmd = characteristic;
+                            } else if (BLEGATTService.UIT_GLUCOSE_VALUE.equals(uuid)) {
+                               uit_glucose_characteristic_value = characteristic;
+                               Log.d("bleGattReceiver", "Characteristic_value");
                             }
                         }
                     }

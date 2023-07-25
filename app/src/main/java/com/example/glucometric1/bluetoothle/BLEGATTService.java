@@ -55,8 +55,7 @@ public class BLEGATTService extends Service {
 
     public static final String UIT_GLUCOSE_CMD = "3c02556c-4700-4957-812e-b7d297a55600";   // write command to device
     public static final String UIT_GLUCOSE_DATA = "3309a511-784f-2d6c-da11-7722d4c08945";   // real device characteristic
-
-    //public static final String TEST_DEVICE_ADDRESS = "B8:8E:82:35:91:D5";   // Huawei band 6
+    public static final String UIT_GLUCOSE_VALUE = "4589c0d4-784f-2d6c-da11-772211a50933";
     public final static String ACTION_GATT_CONNECTED = "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
     public final static String ACTION_GATT_DISCONNECTED = "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
     public final static String ACTION_GATT_SERVICES_DISCOVERED = "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
