@@ -4,6 +4,7 @@ import static java.lang.Integer.parseInt;
 import static java.lang.Integer.valueOf;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ValueAnimator;
@@ -89,10 +90,11 @@ public class MeasurementActivity extends AppCompatActivity {
     private NotifyAffect notifyAffect;
     private static ArrayList<String> arrayList = new ArrayList<>();
     private static String APP_SCRIPT_URL;
-    private static int id_counter;
     private static int check = 1;
     private static int restApp = 0;
     BLEGATTService bleGattService;
+    private static int id_counter;
+    public float[] arrayDataDevice = null;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -105,6 +107,8 @@ public class MeasurementActivity extends AppCompatActivity {
         Intent intent = getIntent();
         ble_device_name = intent.getStringExtra("ble_device_name");
         ble_device_address = intent.getStringExtra("ble_device_address");
+
+        arrayDataDevice = new float[18];
 
         textViewConnectionStatus = (TextView)findViewById(R.id.textViewConnectionStatus);
         textViewConnectionStatus.setText("No Device Connected");
@@ -167,17 +171,19 @@ public class MeasurementActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        displayValueTextView();
+                        Log.d("arrayDataReceive","DataNow:" + Arrays.toString(arrayDataDevice));
+                        processModelTest(arrayDataDevice);
                         Toast.makeText(MeasurementActivity.this, "Blood glucose check finish", Toast.LENGTH_SHORT).show();
                         lottieDialog_measurement.dismiss();
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
+                                displayValueTextView();
                                 sendGlucoseValueToDevice();
                             }
                         },2000);
                     }
-                }, 10000);
+                }, 11500);
             }
         });
 
@@ -208,6 +214,31 @@ public class MeasurementActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private void processModelTest(float[] arrayData) {
+        Intent intent = new Intent(MeasurementActivity.this,Model.class);
+        intent.putExtra("data",arrayData);
+        startActivityForResult(intent,1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                ValueGlucose = data.getIntExtra("resultData",80);
+                Log.i("ValueGlucoseFromModel", "ValueGlucoseFromModel:"+ ValueGlucose);
+                textview_value.setText(String.valueOf(ValueGlucose));
+            }
+            if (resultCode == RESULT_CANCELED)
+            {
+                Log.i("ValueGlucoseFromModel", "Nothing");
+            }
+
+        }
     }
 
     private void sendGlucoseValueToDevice() {
@@ -260,8 +291,6 @@ public class MeasurementActivity extends AppCompatActivity {
     }
 
     private void TakeSampleFuction() {
-        //        String cmd = "0x01C0";
-//                byte[] cmd = {0xc0};
         Log.d("Take Sample", "Taking data");
         if (!isDeviceConnected)
         {
@@ -323,16 +352,15 @@ public class MeasurementActivity extends AppCompatActivity {
         String currentDateTime = dateFormat.format(new Date()); // Find todays date
         Log.i("TimeStamp", "Timestamp:"+ currentDateTime);
         textview_time_date.setText(currentDateTime);
-        final int min = 80;
-        final int max = 140;
-        ValueGlucose = new Random().nextInt((max - min) + 1) + min;
-        textview_value.setText(String.valueOf(ValueGlucose));
+
+        Log.i("ValueGlucoseFromModel", "ValueGlucoseFromModel:"+ ValueGlucose);
+          textview_value.setText(String.valueOf(ValueGlucose));
     }
 
     public void startAnimationCounter(int start, int end)
     {
         ValueAnimator animator = ValueAnimator.ofInt(start,end);
-        animator.setDuration(10000);
+        animator.setDuration(11500);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(@NonNull ValueAnimator animation) {
@@ -417,6 +445,11 @@ public class MeasurementActivity extends AppCompatActivity {
                     Log.d("bleGattReceiver", String.format("Length: %d", temp_array.length));
                     if (temp_array.length == 18) {
                         arrayList = new ArrayList<String>(Arrays.asList(temp_array));
+                        for (int i = 0; i <temp_array.length; i++)
+                        {
+                            arrayDataDevice[i] = Float.parseFloat(temp_array[i]);
+                            Log.d("arrayDataDevice", "arrayData:" + arrayDataDevice[i]);
+                        }
                     }
                 default:
                     break;

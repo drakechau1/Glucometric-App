@@ -84,4 +84,7 @@ dependencies {
     implementation 'com.github.amrdeveloper:lottiedialog:1.0.0'
     // below line is use for image loading library
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.microsoft.onnxruntime:onnxruntime-android:latest.release'
+    implementation 'com.microsoft.onnxruntime:onnxruntime-extensions-android:latest.release'
+
 }
